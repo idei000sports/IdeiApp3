@@ -27,7 +27,7 @@ public class MainActivity extends AppCompatActivity {
     private View activity;
     private final static int PERMISSON_REQUEST_CODE = 2;
     private Intent music_player2;
-
+    private String memo = "githubテスト";
 
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
             = new BottomNavigationView.OnNavigationItemSelectedListener() {
