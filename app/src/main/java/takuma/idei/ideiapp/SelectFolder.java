@@ -24,8 +24,11 @@ import java.util.List;
 import static android.content.Context.BIND_AUTO_CREATE;
 
 public class SelectFolder extends Fragment implements View.OnClickListener{
-
+    private String folder;
+    private String folderPath;
+    private TextView folderPathTextView;
     private List<String> songList = new ArrayList<>();
+    private List<String> folderList = new ArrayList<>();
     private ListView lv;
     private File[] files;
     private FragmentManager fragmentManager;
@@ -53,20 +56,15 @@ public class SelectFolder extends Fragment implements View.OnClickListener{
         getActivity().bindService(serviceIntent, connection, BIND_AUTO_CREATE);
 
     }
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState){
-        final View rootView = inflater.inflate(R.layout.fragment_selectfolder, container, false);
-        String folderPath = Environment.getExternalStorageDirectory().getPath();
-        TextView folderPathTextView = (TextView)rootView.findViewById(R.id.folderPath);
 
 
-        files = new File(folderPath + "/Music/").listFiles();
+    public void makeFolderList(String folderPath, View rootView){
+        Toast.makeText(getContext(), "now : " + folderPath, Toast.LENGTH_LONG).show();
         folderPathTextView.setText(folderPath);
-
-
+        files = new File(folderPath).listFiles();
         if(files != null){
             for(int i = 0; i < files.length; i++){
-                if (files[i].isFile() && files[i].getName().endsWith(".mp3")) {
+                if (files[i].isFile() && files[i].getName().endsWith(".mp3") || files[i].isDirectory()) {
                     songList.add(files[i].getName());
                 }
 
@@ -81,44 +79,53 @@ public class SelectFolder extends Fragment implements View.OnClickListener{
                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                     ListView listView = (ListView) parent;
                     String item = (String) listView.getItemAtPosition(position);
+                    Toast.makeText(getContext(), folderPath + "/" + item, Toast.LENGTH_SHORT).show();
+                    if(item.endsWith(".mp3")) {
+                        //mp3だった場合
+                        int trackNumber = songList.indexOf(item);
+                        ArrayList<String> playList = new ArrayList<>();
 
-                    //setSong(item, rootView);
-                    setAlbum(songList, rootView);
+                        for (int i = trackNumber; i < songList.size(); i++) {
+                            if(songList.get(i).endsWith(".mp3")) {
+                                playList.add(folderPath + "/" + songList.get(i));
+                            }
+                        }
+
+                        try {
+                            binder.setAlbum(playList);
+                        }catch (Exception e) {
+
+                        }
+                    }
+
+                    if (!item.endsWith(".mp3")) {
+                        //folderだった場合の処理
+                        songList.clear();
+                        makeFolderList(folderPath + "/" + item, rootView);
+                    }
                 }
             });
         }
+
+
+    }
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState){
+        final View rootView = inflater.inflate(R.layout.fragment_selectfolder, container, false);
+        folderPath = Environment.getExternalStorageDirectory().getPath();
+        folderPath = folderPath + "/Music";
+
+        folderPathTextView = (TextView)rootView.findViewById(R.id.folderPath);
+        folderPathTextView.setText(folderPath);
+
+
+        makeFolderList(folderPath, rootView);
+
+
         return rootView;
     }
 
-    public void setSong(String item, View v) {
-        String folderPath = Environment.getExternalStorageDirectory().getPath();
-        String path = folderPath + "/Music/" + item;
-        try {
-            binder.setSelectSong(path);
-        }catch (Exception e) {
-
-        }
-    }
-
-    public void setAlbum(List<String> songList, View v) {
-        Toast.makeText(getActivity(), songList.get(1), Toast.LENGTH_SHORT);
-        String folderPath = Environment.getExternalStorageDirectory().getPath();
-        String path = folderPath + "/Music/";
-        List<String> album = new ArrayList<>();
-        for (int i = 0; i < songList.size(); i++) {
-            String song;
-            song = path + songList.get(i);
-            album.add(song);
-            Toast.makeText(getActivity(), song, Toast.LENGTH_SHORT).show();
-        }
-
-
-        try {
-            binder.setAlbum(album);
-        }catch (Exception e) {
-
-        }
-    }
 
     @Override
     public void onClick (View v){

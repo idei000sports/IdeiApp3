@@ -11,6 +11,7 @@ interface MusicPlayerAIDL {
     String playOrPauseSong();
     void stopSong();
     void setRepert();
+    String playNow();
 
     //戻るor次
     void skipNext();
@@ -20,6 +21,7 @@ interface MusicPlayerAIDL {
     //シーク関連
     void setSeek(int progress);
     int getTotalTime();
+    int getCurrentPosition();
 
 
 

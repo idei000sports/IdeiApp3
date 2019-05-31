@@ -8,7 +8,9 @@ import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.IBinder;
+import android.os.Message;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.ImageButton;
@@ -30,6 +32,8 @@ public class MusicPlayerActivity extends AppCompatActivity implements View.OnCli
     private SeekBar positionBar;
     private int totalTime;
     private int getedCurrentPosition;
+    private SeekBarData seekBarData;
+
 
     private TextView error;
     private SongData songData;
@@ -38,6 +42,7 @@ public class MusicPlayerActivity extends AppCompatActivity implements View.OnCli
     private FragmentMusicplayerBinding binding;
     private UpdateReceiver receiver;
     private IntentFilter filter;
+    private boolean playingNow;
 
 
     private ServiceConnection connection = new ServiceConnection() {
@@ -63,8 +68,6 @@ public class MusicPlayerActivity extends AppCompatActivity implements View.OnCli
         startService(serviceIntent);
         bindService(serviceIntent, connection, BIND_AUTO_CREATE);
 
-        //UpdateReceiver receiver = new UpdateReceiver();
-        //IntentFilter filter = new IntentFilter();
         receiver = new UpdateReceiver();
         filter = new IntentFilter();
         filter.addAction("DO_ACTION");
@@ -86,7 +89,7 @@ public class MusicPlayerActivity extends AppCompatActivity implements View.OnCli
             @Override
             public void onClick(View v) {
                 try {
-                    binder.playOrPauseSong();
+                    String PLAYORPAUSE = binder.playOrPauseSong();
                 }catch (Exception e) {
 
                 }
@@ -99,11 +102,6 @@ public class MusicPlayerActivity extends AppCompatActivity implements View.OnCli
             public void onClick(View v) {
                 try {
                     binder.skipNext();
-                    ArrayList<String> song = (ArrayList<String>)binder.getNowSongData();
-
-                    songData = new SongData(song.get(0), song.get(1), song.get(2));
-                    binding.setSongData(songData);
-
                 }catch (Exception e) {
 
                 }
@@ -114,12 +112,6 @@ public class MusicPlayerActivity extends AppCompatActivity implements View.OnCli
             public void onClick(View v) {
                 try {
                     binder.skipBack();
-                    ArrayList<String> song = (ArrayList<String>)binder.getNowSongData();
-
-                    songData = new SongData(song.get(0), song.get(1), song.get(2));
-                    binding.setSongData(songData);
-
-
                 }catch (Exception e) {
 
                 }
@@ -144,10 +136,9 @@ public class MusicPlayerActivity extends AppCompatActivity implements View.OnCli
             }
         });
 
-        /*
+
         positionBar = (SeekBar)findViewById(R.id.positionBar);
-        positionBar.setMax(totalTime);
-        Toast.makeText(getApplicationContext(), "totalTime is " + totalTime, Toast.LENGTH_SHORT).show();
+
         positionBar.setOnSeekBarChangeListener(
                 new SeekBar.OnSeekBarChangeListener() {
                     @Override
@@ -159,6 +150,7 @@ public class MusicPlayerActivity extends AppCompatActivity implements View.OnCli
 
                             }
                             positionBar.setProgress(progress);
+
                         }
                     }
 
@@ -178,35 +170,59 @@ public class MusicPlayerActivity extends AppCompatActivity implements View.OnCli
             public void run() {
                 while (true) {
                     try {
+                        //スレッドでサービスの情報取得
+                        //曲のメタデータ
+                        ArrayList<String> song = (ArrayList<String>)binder.getNowSongData();
+                        songData = new SongData(song.get(0), song.get(1), song.get(2));
+                        binding.setSongData(songData);
+
+                        //再生中か
+                        String playNow = binder.playNow();
+                        if (playNow.equals("PLAY")) {
+                            playButton.setImageResource(R.drawable.pause);
+                        } else if (playNow.equals("PAUSE")) {
+                            playButton.setImageResource(R.drawable.playbutton);
+                        }
+
+                        //曲の長さ
+                        seekBarData = new SeekBarData(binder.getTotalTime());
+                        binding.setSeekBarData(seekBarData);
+
                         Message msg = new Message();
-                        msg.what = getedCurrentPosition;
+
+                        msg.what = binder.getCurrentPosition();
                         handler.sendMessage(msg);
                         Thread.sleep(1000);
-                    } catch (InterruptedException e) {}
+                    } catch (InterruptedException e) {} catch (Exception e) { }
                 }
             }
         }).start();
-        */
+
     }
+
 
     protected class UpdateReceiver extends BroadcastReceiver {
         @Override
         public void onReceive(Context context, Intent intent){
+            /*
             Bundle extras = intent.getExtras();
             String msg = extras.getString("message");
             String title = extras.getString("title");
             String album = extras.getString("album");
             String artist = extras.getString("artist");
-
+            //playingNow = extras.getBoolean("playingNow");
             int totalTime = extras.getInt("totalTime");
-            getedCurrentPosition = extras.getInt("currentPosition");
+            //getedCurrentPosition = extras.getInt("currentPosition");
             //Toast.makeText(getApplicationContext(), msg, Toast.LENGTH_SHORT).show();
 
             songData = new SongData(artist, album, title);
             binding.setSongData(songData);
+            seekBarData = new SeekBarData(totalTime);
+            binding.setSeekBarData(seekBarData);
+            */
         }
     }
-    /*
+
     private Handler handler = new Handler(new Handler.Callback() {
         @Override
         public boolean handleMessage(Message msg) {
@@ -214,10 +230,29 @@ public class MusicPlayerActivity extends AppCompatActivity implements View.OnCli
             // 再生位置を更新
             positionBar.setProgress(currentPosition);
 
+            String elapsedTime = createTimeLabel(currentPosition);
+            String remainingTime = createTimeLabel(seekBarData.getTotalTime()-currentPosition);
+
+            seekBarData.setElapsedTimeLabel(elapsedTime);
+            seekBarData.setRemainingTimeLabel(remainingTime);
+            binding.setSeekBarData(seekBarData);
+
             return true;
         }
     });
-    */
+
+    public String createTimeLabel(int time) {
+        String timeLabel = "";
+        int min = time / 1000 / 60;
+        int sec = time / 1000 % 60;
+
+        timeLabel = min + ":";
+        if (sec < 10) timeLabel += "0";
+        timeLabel += sec;
+
+        return timeLabel;
+    }
+
 
     public void onClick(View view) {
 

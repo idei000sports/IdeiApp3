@@ -23,6 +23,7 @@ public class MusicPlayerService extends Service {
     private String title_name;
     private List<String> album;
     private int next_track_number;
+    private boolean playingNow = false;
     private boolean REPERT = false;
 
     private final RemoteCallbackList<IMusicServiceCallback> mCallbackList = new RemoteCallbackList<IMusicServiceCallback>();
@@ -41,8 +42,9 @@ public class MusicPlayerService extends Service {
         broadcast.putExtra("artist", artist_name);
         broadcast.putExtra("album", album_name);
         broadcast.putExtra("title", title_name);
-        broadcast.putExtra("totalTime", totalTime);
-        broadcast.putExtra("currentPosition", currentPosition);
+        broadcast.putExtra("totalTime", mediaPlayer.getDuration());
+        broadcast.putExtra("currentPosition", mediaPlayer.getCurrentPosition());
+        broadcast.putExtra("playingNow", playingNow);
         broadcast.setAction("DO_ACTION");
         getBaseContext().sendBroadcast(broadcast);
     }
@@ -53,6 +55,7 @@ public class MusicPlayerService extends Service {
     public void onCreate() {
         super.onCreate();
         mediaPlayer = new MediaPlayer();
+        mediaPlayer.seekTo(0);
 
 
     }
@@ -67,16 +70,11 @@ public class MusicPlayerService extends Service {
         title_name = mediaMetadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_TITLE);
         artist_name = mediaMetadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ARTIST);
         album_name = mediaMetadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ALBUM);
-
-        //これやるとエラーでる
-        //totalTime = mediaPlayer.getDuration();
-        //currentPosition = mediaPlayer.getCurrentPosition();
     }
 
 
     public String getAlbumSong(int track) {
         String songPath = album.get(track);
-
         return songPath;
     }
 
@@ -96,6 +94,7 @@ public class MusicPlayerService extends Service {
                 mediaPlayer.setDataSource(songPath);
                 mediaPlayer.prepare();
                 mediaPlayer.start();
+                playingNow = true;
 
 
                 mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
@@ -106,6 +105,7 @@ public class MusicPlayerService extends Service {
                             mediaPlayer.reset();
                             mediaPlayer.release();
                             mediaPlayer = null;
+                            playingNow = false;
                             if(REPERT == true) {
                                 next_track_number = next_track_number -1;
                             }
@@ -142,6 +142,19 @@ public class MusicPlayerService extends Service {
             return PLAYORPAUSE;
 
         }
+
+        @Override
+        public String playNow() throws RemoteException {
+            String playNow;
+            if (mediaPlayer.isPlaying()) {
+                playNow = "PLAY";
+            } else {
+                playNow = "PAUSE";
+            }
+
+            return playNow;
+
+        }
         @Override
         public void stopSong() throws RemoteException {
             if (mediaPlayer == null) return;
@@ -149,6 +162,7 @@ public class MusicPlayerService extends Service {
             mediaPlayer.reset();
             mediaPlayer.release();;
             mediaPlayer = null;
+            playingNow = false;
         }
 
         @Override
@@ -197,7 +211,12 @@ public class MusicPlayerService extends Service {
         public void setAlbum(List<String> makedAlbum) throws RemoteException {
             album = makedAlbum;
             next_track_number = 0;
-            playAlbum();
+            try {
+                stopSong();
+                playAlbum();
+            }catch (Exception e) {
+
+            }
         }
         @Override
         public void setRepert() throws RemoteException {
@@ -214,8 +233,14 @@ public class MusicPlayerService extends Service {
         }
         @Override
         public int getTotalTime() throws RemoteException {
-            totalTime = 100;
+            int totalTime = mediaPlayer.getDuration();
             return totalTime;
+        }
+
+        @Override
+        public int getCurrentPosition()throws RemoteException {
+            int currentPosition = mediaPlayer.getCurrentPosition();
+            return currentPosition;
         }
         @Override
         public void registerCallback(IMusicServiceCallback callback)
