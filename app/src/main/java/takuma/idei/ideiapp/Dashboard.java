@@ -12,7 +12,7 @@ import android.widget.TextView;
 public class Dashboard extends Fragment implements View.OnClickListener{
     private EditText editText;
     private ImageButton button;
-
+    private TextView SQLText;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -22,6 +22,12 @@ public class Dashboard extends Fragment implements View.OnClickListener{
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+
+
+
+
+
+
 
 
         editText = getView().findViewById(R.id.edittext);
