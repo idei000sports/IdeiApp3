@@ -92,14 +92,14 @@ public class SelectFolder extends Fragment implements View.OnClickListener{
                         }
 
                         try {
-                            binder.setAlbum(playList);
+                            String albumArtPath = folderPath + "/" + "folder.jpg";
+                            binder.setAlbum(playList, albumArtPath);
                         }catch (Exception e) {
 
                         }
-                    }
+                    } else if (item.equals("folder.jpg")) {
 
-                    if (!item.endsWith(".mp3")) {
-                        //folderだった場合の処理
+                    } else {
                         songList.clear();
                         makeFolderList(folderPath + "/" + item, rootView);
                     }

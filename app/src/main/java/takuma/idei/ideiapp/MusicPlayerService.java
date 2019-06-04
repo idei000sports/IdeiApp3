@@ -18,26 +18,24 @@ import java.util.List;
 import static takuma.idei.ideiapp.Home.TAG;
 
 public class MusicPlayerService extends Service {
+    private SQLiteDatabase mDb;
+    private final RemoteCallbackList<IMusicServiceCallback> mCallbackList = new RemoteCallbackList<IMusicServiceCallback>();
     private MediaPlayer mediaPlayer;
-    private int totalTime = 100;
-    private int currentPosition;
-    private String message = "message";
+    MediaMetadataRetriever mediaMetadataRetriever;
     private String folderPath;
-    private SongData songData;
     private String artist_name;
     private String album_name;
     private String title_name;
+    private String albumArtPath;
+
     private List<String> album;
     private int next_track_number;
     private boolean playingNow = false;
     private boolean REPERT = false;
-    private SQLiteDatabase mDb;
-
-    private final RemoteCallbackList<IMusicServiceCallback> mCallbackList = new RemoteCallbackList<IMusicServiceCallback>();
 
 
     public int onStartCommand(Intent intent, int flags, int startId){
-        sendMessage("こんにちは");
+        sendMessage("プレーヤー");
         stopSelf();
         return START_NOT_STICKY;
     }
@@ -58,25 +56,23 @@ public class MusicPlayerService extends Service {
 
 
 
+
     @Override
     public void onCreate() {
         super.onCreate();
         mediaPlayer = new MediaPlayer();
         mediaPlayer.seekTo(0);
-
-
     }
 
     public void makeSongData() {
-        MediaMetadataRetriever mediaMetadataRetriever = new MediaMetadataRetriever();
+        mediaMetadataRetriever = new MediaMetadataRetriever();
         try {
             mediaMetadataRetriever.setDataSource(folderPath);
+            title_name = mediaMetadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_TITLE);
+            artist_name = mediaMetadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ARTIST);
+            album_name = mediaMetadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ALBUM);
         } catch (Exception e) {
         }
-
-        title_name = mediaMetadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_TITLE);
-        artist_name = mediaMetadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ARTIST);
-        album_name = mediaMetadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ALBUM);
     }
 
 
@@ -136,6 +132,9 @@ public class MusicPlayerService extends Service {
 
     public void makeHistory() {
         int count = 0;
+        PlayDataBase hlpr = new PlayDataBase(getApplicationContext());
+        mDb = hlpr.getWritableDatabase();
+        ContentValues values = new ContentValues();
 
         try {
             // rawQueryというSELECT専用メソッドを使用してデータを取得する
@@ -165,29 +164,16 @@ public class MusicPlayerService extends Service {
         }
 
         if (count > 0) {
-            String song = title_name;
-            String artist = artist_name;
-            String album = album_name;
+            int newCount = count + 1;
+            values.put("count", newCount);
 
-            //mDb.execSQL("UPDATE count_table SET count = count+1 WHERE song = '" + title_name + "' AND artist = '" + artist_name + "' AND album = '" + album_name + "';", null);
-            int plusCount = count + 1;
-            PlayDataBase hlpr = new PlayDataBase(getApplicationContext());
-            mDb = hlpr.getWritableDatabase();
-            ContentValues values = new ContentValues();
-            values.put("count", plusCount);
-
-            mDb.update("count_table", values, "song = ? AND artist = ? AND album = ?", new String[]{song, artist, album});
-
-
+            mDb.update("count_table", values, "song = ? AND artist = ? AND album = ?", new String[]{title_name, artist_name, album_name});
 
         } else if (count == 0) {
-            Log.e(TAG, "makeHistory: aaaaaaaaaacount==0" + title_name + artist_name + album_name );
-            PlayDataBase hlpr = new PlayDataBase(getApplicationContext());
-            mDb = hlpr.getWritableDatabase();
-            ContentValues values = new ContentValues();
             values.put("song", title_name);
             values.put("artist", artist_name);
             values.put("album", album_name);
+            values.put("album_art_path", albumArtPath);
             values.put("count", 1);
             mDb.insert("count_table", null, values);
         }
@@ -198,6 +184,16 @@ public class MusicPlayerService extends Service {
 
 
     private final MusicPlayerAIDL.Stub MusicPlayerAIDLBinder = new MusicPlayerAIDL.Stub() {
+        @Override
+        public void setAlbumArt() throws RemoteException {
+
+        }
+
+        @Override
+        public String getAlbumArt() throws RemoteException {
+
+            return albumArtPath;
+        }
 
         @Override
         public String playOrPauseSong() throws RemoteException {
@@ -279,7 +275,8 @@ public class MusicPlayerService extends Service {
         }
 
         @Override
-        public void setAlbum(List<String> makedAlbum) throws RemoteException {
+        public void setAlbum(List<String> makedAlbum, String getedAlbumArtPath) throws RemoteException {
+            albumArtPath = getedAlbumArtPath;
             album = makedAlbum;
             next_track_number = 0;
             try {
@@ -326,6 +323,7 @@ public class MusicPlayerService extends Service {
         }
 
     };
+
 
 
     @Override

@@ -7,6 +7,8 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.databinding.DataBindingUtil;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
@@ -14,8 +16,8 @@ import android.os.Message;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.SeekBar;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
@@ -23,26 +25,24 @@ import java.util.ArrayList;
 import takuma.idei.ideiapp.databinding.FragmentMusicplayerBinding;
 
 public class MusicPlayerActivity extends AppCompatActivity implements View.OnClickListener {
+    private ImageView albumArt;
+
     private ImageButton playButton;
     private ImageButton skipNextButton;
     private ImageButton skipBackButton;
     private ImageButton finishActivity;
     private ImageButton repertButton;
 
+
     private SeekBar positionBar;
-    private int totalTime;
-    private int getedCurrentPosition;
     private SeekBarData seekBarData;
 
-
-    private TextView error;
     private SongData songData;
     private Intent serviceIntent;
     private MusicPlayerAIDL binder;
     private FragmentMusicplayerBinding binding;
     private UpdateReceiver receiver;
     private IntentFilter filter;
-    private boolean playingNow;
 
 
     private ServiceConnection connection = new ServiceConnection() {
@@ -68,10 +68,13 @@ public class MusicPlayerActivity extends AppCompatActivity implements View.OnCli
         startService(serviceIntent);
         bindService(serviceIntent, connection, BIND_AUTO_CREATE);
 
+
         receiver = new UpdateReceiver();
         filter = new IntentFilter();
         filter.addAction("DO_ACTION");
         registerReceiver(receiver, filter);
+        unregisterReceiver(receiver);
+
 
 
     }
@@ -83,7 +86,8 @@ public class MusicPlayerActivity extends AppCompatActivity implements View.OnCli
         skipBackButton = (ImageButton)findViewById(R.id.SkipBackButton);
         finishActivity = (ImageButton)findViewById(R.id.FinishActivity);
         repertButton = (ImageButton)findViewById(R.id.Repeat);
-
+        albumArt = (ImageView)findViewById(R.id.AlbumArt);
+        positionBar = (SeekBar)findViewById(R.id.positionBar);
 
         playButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -103,7 +107,7 @@ public class MusicPlayerActivity extends AppCompatActivity implements View.OnCli
                 try {
                     binder.skipNext();
                 }catch (Exception e) {
-
+                    //制作
                 }
             }
         });
@@ -137,7 +141,7 @@ public class MusicPlayerActivity extends AppCompatActivity implements View.OnCli
         });
 
 
-        positionBar = (SeekBar)findViewById(R.id.positionBar);
+
 
         positionBar.setOnSeekBarChangeListener(
                 new SeekBar.OnSeekBarChangeListener() {
@@ -175,6 +179,11 @@ public class MusicPlayerActivity extends AppCompatActivity implements View.OnCli
                         ArrayList<String> song = (ArrayList<String>)binder.getNowSongData();
                         songData = new SongData(song.get(0), song.get(1), song.get(2));
                         binding.setSongData(songData);
+
+                        String albumArtPath = binder.getAlbumArt();
+                        Bitmap bmImg = BitmapFactory.decodeFile(albumArtPath);
+                        albumArt.setImageBitmap(bmImg);
+
 
                         //再生中か
                         String playNow = binder.playNow();
@@ -220,8 +229,10 @@ public class MusicPlayerActivity extends AppCompatActivity implements View.OnCli
             seekBarData = new SeekBarData(totalTime);
             binding.setSeekBarData(seekBarData);
             */
+
         }
     }
+
 
     private Handler handler = new Handler(new Handler.Callback() {
         @Override
@@ -256,6 +267,12 @@ public class MusicPlayerActivity extends AppCompatActivity implements View.OnCli
 
     public void onClick(View view) {
 
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        //unbindService();
     }
 
 }

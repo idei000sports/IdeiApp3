@@ -8,6 +8,7 @@ public class SongData implements Serializable {
     private String album;
     private String title;
     private boolean playingNow;
+    private String albumArt;
 
     public SongData(String artist, String album, String title){
         this.artist = artist;
@@ -46,4 +47,11 @@ public class SongData implements Serializable {
         this.playingNow = playingNow;
     }
 
+    public String getAlbumArt() {
+        return albumArt;
+    }
+
+    public void setAlbumArt(String albumArt) {
+        this.albumArt = albumArt;
+    }
 }
