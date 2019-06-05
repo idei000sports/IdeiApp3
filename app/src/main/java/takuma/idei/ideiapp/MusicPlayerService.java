@@ -68,7 +68,10 @@ public class MusicPlayerService extends Service {
 
         folderPath = songPath;
         makeSongData();
-
+        SongData songData = new SongData();
+        songData.setTitle(title_name);
+        songData.setArtist(artist_name);
+        songData.setAlbum(album_name);
 
         try {
             if (mediaPlayer == null || !mediaPlayer.isPlaying()) {

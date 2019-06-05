@@ -17,11 +17,11 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.TextView;
 
 public class MainActivity extends AppCompatActivity {
-    private TextView mTextMessage;
+    //private TextView mTextMessage;
     private Fragment fragment;
+    private Fragment bottomPlayerFragment;
     private FragmentActivity fragmentActivity;
     private FragmentManager fragmentManager;
     private View activity;
@@ -36,11 +36,11 @@ public class MainActivity extends AppCompatActivity {
         public boolean onNavigationItemSelected(@NonNull MenuItem item) {
             switch (item.getItemId()) {
                 case R.id.navigation_home:
-                    mTextMessage.setText(R.string.title_home);
+                    //mTextMessage.setText(R.string.title_home);
                     fragment = new Home();
                     break;
                 case R.id.navigation_dashboard:
-                    mTextMessage.setText(R.string.title_dashboard);
+                    //mTextMessage.setText(R.string.title_dashboard);
                     fragment = new Dashboard();
                     break;
                 case R.id.navigation_notifications:
@@ -48,7 +48,7 @@ public class MainActivity extends AppCompatActivity {
                     startActivity(i);
                     //break;
                 case R.id.navigation_selectFolder:
-                    mTextMessage.setText("folder");
+                    //mTextMessage.setText("folder");
                     fragment = new SelectFolder();
                     break;
             }
@@ -68,9 +68,11 @@ public class MainActivity extends AppCompatActivity {
 
         fragmentManager = getSupportFragmentManager();
         fragment = new Home();
+        bottomPlayerFragment = new BottomPlayer();
+
 
         BottomNavigationView navView = findViewById(R.id.nav_view);
-        mTextMessage = findViewById(R.id.message);
+        //mTextMessage = findViewById(R.id.message);
         navView.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
     }
 

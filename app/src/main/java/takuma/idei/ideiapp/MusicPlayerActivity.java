@@ -29,7 +29,7 @@ public class MusicPlayerActivity extends AppCompatActivity implements View.OnCli
     private ImageButton skipBackButton;
     private ImageButton finishActivity;
     private ImageButton repertButton;
-
+    private SongData songData;
     private SeekBar positionBar;
     private SeekBarData seekBarData;
 
@@ -37,7 +37,7 @@ public class MusicPlayerActivity extends AppCompatActivity implements View.OnCli
     private Intent serviceIntent;
     private MusicPlayerAIDL binder;
     //DataBinding用
-    private SongData songData;
+    //private SongData songData;
     private FragmentMusicplayerBinding binding;
 
     private ServiceConnection connection = new ServiceConnection() {
@@ -55,6 +55,11 @@ public class MusicPlayerActivity extends AppCompatActivity implements View.OnCli
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         binding = DataBindingUtil.setContentView(this, R.layout.fragment_musicplayer);
+
+        songData = new SongData();
+        binding.setSongData(songData);
+        songData.setArtist("kuso");
+        songData.setTitle("syonben");
 
         //サービス開き
         serviceIntent = new Intent(this, MusicPlayerService.class);
@@ -166,8 +171,14 @@ public class MusicPlayerActivity extends AppCompatActivity implements View.OnCli
 
                         //曲のメタデータとアルバムアートをDataBindingに
                         ArrayList<String> song = (ArrayList<String>)binder.getNowSongData();
-                        songData = new SongData(song.get(0), song.get(1), song.get(2));
-                        binding.setSongData(songData);
+                        //songData = new SongData(song.get(0), song.get(1), song.get(2));
+                        //binding.setSongData(songData);
+
+                        songData.setTitle(song.get(2));
+                        songData.setArtist(song.get(0));
+                        songData.setAlbum(song.get(1));
+
+
                         //PathからBitmapへ変換してset
                         String albumArtPath = binder.getAlbumArt();
                         albumArt.setImageBitmap(BitmapFactory.decodeFile(albumArtPath));
