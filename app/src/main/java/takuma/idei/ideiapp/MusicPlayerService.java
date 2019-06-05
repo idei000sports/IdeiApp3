@@ -8,7 +8,6 @@ import android.database.sqlite.SQLiteDatabase;
 import android.media.MediaMetadataRetriever;
 import android.media.MediaPlayer;
 import android.os.IBinder;
-import android.os.RemoteCallbackList;
 import android.os.RemoteException;
 import android.util.Log;
 
@@ -19,9 +18,8 @@ import static takuma.idei.ideiapp.Home.TAG;
 
 public class MusicPlayerService extends Service {
     private SQLiteDatabase mDb;
-    private final RemoteCallbackList<IMusicServiceCallback> mCallbackList = new RemoteCallbackList<IMusicServiceCallback>();
     private MediaPlayer mediaPlayer;
-    MediaMetadataRetriever mediaMetadataRetriever;
+    private MediaMetadataRetriever mediaMetadataRetriever;
     private String folderPath;
     private String artist_name;
     private String album_name;
@@ -34,35 +32,17 @@ public class MusicPlayerService extends Service {
     private boolean REPERT = false;
 
 
-    public int onStartCommand(Intent intent, int flags, int startId){
-        sendMessage("プレーヤー");
-        stopSelf();
-        return START_NOT_STICKY;
-    }
-
-    protected void sendMessage(String msg){
-        makeSongData();
-        Intent broadcast = new Intent();
-        broadcast.putExtra("message", msg);
-        broadcast.putExtra("artist", artist_name);
-        broadcast.putExtra("album", album_name);
-        broadcast.putExtra("title", title_name);
-        broadcast.putExtra("totalTime", mediaPlayer.getDuration());
-        broadcast.putExtra("currentPosition", mediaPlayer.getCurrentPosition());
-        broadcast.putExtra("playingNow", playingNow);
-        broadcast.setAction("DO_ACTION");
-        getBaseContext().sendBroadcast(broadcast);
-    }
-
-
-
-
     @Override
     public void onCreate() {
         super.onCreate();
         mediaPlayer = new MediaPlayer();
         mediaPlayer.seekTo(0);
     }
+
+
+
+
+
 
     public void makeSongData() {
         mediaMetadataRetriever = new MediaMetadataRetriever();
@@ -99,7 +79,7 @@ public class MusicPlayerService extends Service {
                 mediaPlayer.start();
                 playingNow = true;
 
-
+                //再生が終わったとき
                 mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
                     @Override
                     public void onCompletion(MediaPlayer mp) {
@@ -165,7 +145,18 @@ public class MusicPlayerService extends Service {
 
         if (count > 0) {
             int newCount = count + 1;
+            int nextAutoIncrement = 0;
+            String sql = "SELECT MAX(id) FROM count_table;";
+            Cursor cursor = mDb.rawQuery(sql, null);
+            boolean next = cursor.moveToNext();
+            while(next) {
+                nextAutoIncrement = cursor.getInt(cursor.getColumnIndex("MAX(id)"));
+                nextAutoIncrement += 1;
+                next = cursor.moveToNext();
+            }
+
             values.put("count", newCount);
+            values.put("id", nextAutoIncrement);
 
             mDb.update("count_table", values, "song = ? AND artist = ? AND album = ?", new String[]{title_name, artist_name, album_name});
 
@@ -184,10 +175,7 @@ public class MusicPlayerService extends Service {
 
 
     private final MusicPlayerAIDL.Stub MusicPlayerAIDLBinder = new MusicPlayerAIDL.Stub() {
-        @Override
-        public void setAlbumArt() throws RemoteException {
 
-        }
 
         @Override
         public String getAlbumArt() throws RemoteException {
@@ -310,26 +298,12 @@ public class MusicPlayerService extends Service {
             int currentPosition = mediaPlayer.getCurrentPosition();
             return currentPosition;
         }
-        @Override
-        public void registerCallback(IMusicServiceCallback callback)
-                throws RemoteException {
-            mCallbackList.register(callback);
-        }
-
-        @Override
-        public void unregisterCallback(IMusicServiceCallback callback)
-                throws RemoteException {
-            mCallbackList.unregister(callback);
-        }
-
     };
 
 
 
     @Override
     public IBinder onBind(Intent intent) {
-        sendMessage("こんばんは");
-
         return MusicPlayerAIDLBinder;
     }
 

@@ -1,13 +1,9 @@
 package takuma.idei.ideiapp;
 
-import android.content.BroadcastReceiver;
 import android.content.ComponentName;
-import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.databinding.DataBindingUtil;
-import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.os.Handler;
@@ -24,58 +20,46 @@ import java.util.ArrayList;
 
 import takuma.idei.ideiapp.databinding.FragmentMusicplayerBinding;
 
+//プレーヤーの表示部分
 public class MusicPlayerActivity extends AppCompatActivity implements View.OnClickListener {
-    private ImageView albumArt;
 
+    private ImageView albumArt;
     private ImageButton playButton;
     private ImageButton skipNextButton;
     private ImageButton skipBackButton;
     private ImageButton finishActivity;
     private ImageButton repertButton;
 
-
     private SeekBar positionBar;
     private SeekBarData seekBarData;
 
-    private SongData songData;
+    //サービスへのアクセス
     private Intent serviceIntent;
     private MusicPlayerAIDL binder;
+    //DataBinding用
+    private SongData songData;
     private FragmentMusicplayerBinding binding;
-    private UpdateReceiver receiver;
-    private IntentFilter filter;
-
 
     private ServiceConnection connection = new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName name, IBinder service) {
             binder = MusicPlayerAIDL.Stub.asInterface(service);
         }
-
         @Override
         public void onServiceDisconnected(ComponentName name) {
             binder = null;
         }
     };
 
-
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         binding = DataBindingUtil.setContentView(this, R.layout.fragment_musicplayer);
+
+        //サービス開き
         serviceIntent = new Intent(this, MusicPlayerService.class);
-        //二重でstartServiceしても問題ないらしい
         startService(serviceIntent);
         bindService(serviceIntent, connection, BIND_AUTO_CREATE);
-
-
-        receiver = new UpdateReceiver();
-        filter = new IntentFilter();
-        filter.addAction("DO_ACTION");
-        registerReceiver(receiver, filter);
-        unregisterReceiver(receiver);
-
-
 
     }
     @Override
@@ -107,7 +91,7 @@ public class MusicPlayerActivity extends AppCompatActivity implements View.OnCli
                 try {
                     binder.skipNext();
                 }catch (Exception e) {
-                    //制作
+
                 }
             }
         });
@@ -132,6 +116,10 @@ public class MusicPlayerActivity extends AppCompatActivity implements View.OnCli
                 }
             }
         });
+
+
+
+
 
         finishActivity.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -174,18 +162,17 @@ public class MusicPlayerActivity extends AppCompatActivity implements View.OnCli
             public void run() {
                 while (true) {
                     try {
-                        //スレッドでサービスの情報取得
-                        //曲のメタデータ
+                        //秒ごとにサービスの状態を取得するスレッド
+
+                        //曲のメタデータとアルバムアートをDataBindingに
                         ArrayList<String> song = (ArrayList<String>)binder.getNowSongData();
                         songData = new SongData(song.get(0), song.get(1), song.get(2));
                         binding.setSongData(songData);
-
+                        //PathからBitmapへ変換してset
                         String albumArtPath = binder.getAlbumArt();
-                        Bitmap bmImg = BitmapFactory.decodeFile(albumArtPath);
-                        albumArt.setImageBitmap(bmImg);
+                        albumArt.setImageBitmap(BitmapFactory.decodeFile(albumArtPath));
 
-
-                        //再生中か
+                        //再生中か否か
                         String playNow = binder.playNow();
                         if (playNow.equals("PLAY")) {
                             playButton.setImageResource(R.drawable.pause);
@@ -198,7 +185,6 @@ public class MusicPlayerActivity extends AppCompatActivity implements View.OnCli
                         binding.setSeekBarData(seekBarData);
 
                         Message msg = new Message();
-
                         msg.what = binder.getCurrentPosition();
                         handler.sendMessage(msg);
                         Thread.sleep(1000);
@@ -209,29 +195,6 @@ public class MusicPlayerActivity extends AppCompatActivity implements View.OnCli
 
     }
 
-
-    protected class UpdateReceiver extends BroadcastReceiver {
-        @Override
-        public void onReceive(Context context, Intent intent){
-            /*
-            Bundle extras = intent.getExtras();
-            String msg = extras.getString("message");
-            String title = extras.getString("title");
-            String album = extras.getString("album");
-            String artist = extras.getString("artist");
-            //playingNow = extras.getBoolean("playingNow");
-            int totalTime = extras.getInt("totalTime");
-            //getedCurrentPosition = extras.getInt("currentPosition");
-            //Toast.makeText(getApplicationContext(), msg, Toast.LENGTH_SHORT).show();
-
-            songData = new SongData(artist, album, title);
-            binding.setSongData(songData);
-            seekBarData = new SeekBarData(totalTime);
-            binding.setSeekBarData(seekBarData);
-            */
-
-        }
-    }
 
 
     private Handler handler = new Handler(new Handler.Callback() {
