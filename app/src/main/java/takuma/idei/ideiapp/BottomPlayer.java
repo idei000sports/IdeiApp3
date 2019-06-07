@@ -11,15 +11,15 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageButton;
+import android.widget.LinearLayout;
 
 import takuma.idei.ideiapp.databinding.FragmentBottomplayerBinding;
 
 public class BottomPlayer extends Fragment implements View.OnClickListener{
-    private ImageButton bottomPlayerPlay;
-    private ImageButton upButton;
-    private SongData songData;
+    private LinearLayout bottomPlayerBg;
+    //DataBinding
     private FragmentBottomplayerBinding binding;
+    //ServiceへのBinder
     private MusicPlayerAIDL binder;
     private Intent serviceIntent;
     private ServiceConnection connection = new ServiceConnection() {
@@ -36,6 +36,7 @@ public class BottomPlayer extends Fragment implements View.OnClickListener{
     @Override
     public void onCreate(Bundle bundle) {
         super.onCreate(bundle);
+        //Serviceへ繋ぐ
         serviceIntent = new Intent(getActivity(), MusicPlayerService.class);
         getActivity().startService(serviceIntent);
         getActivity().bindService(serviceIntent, connection, Context.BIND_AUTO_CREATE);
@@ -45,33 +46,30 @@ public class BottomPlayer extends Fragment implements View.OnClickListener{
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_bottomplayer,container, false);
         View rootView = binding.getRoot();
+        //DataBinding用
+        binding.setSongData(new SongData());
 
-        songData = new SongData();
-        binding.setSongData(songData);
-
+        //ボタン類
         rootView.findViewById(R.id.bottom_player_play).setOnClickListener(this);
         rootView.findViewById(R.id.bottom_player_up).setOnClickListener(this);
-
+        bottomPlayerBg = rootView.findViewById(R.id.bottom_player_bg);
+        bottomPlayerBg.setClickable(true);
+        bottomPlayerBg.setOnClickListener(this);
 
         return rootView;
     }
-
-    @Override
-    public void onStart() {
-
-        super.onStart();
-
-    }
-
 
     public void onClick(View v) {
         if(v != null) {
             try {
                 switch (v.getId()) {
                     case R.id.bottom_player_play:
-                        String PLAYORPAUSE = binder.playOrPauseSong();
+                        //再生してたらポーズ、そうでなければ再生
+                        binder.playOrPauseSong();
                         break;
                     case R.id.bottom_player_up:
+                    case R.id.bottom_player_bg:
+                        //プレーヤー（大）起動
                         Intent i = new Intent(getActivity(),MusicPlayerActivity.class);
                         startActivity(i);
                         break;

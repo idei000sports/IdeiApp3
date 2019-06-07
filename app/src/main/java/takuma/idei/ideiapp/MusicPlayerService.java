@@ -186,7 +186,7 @@ public class MusicPlayerService extends Service {
         }
 
         @Override
-        public String playOrPauseSong() throws RemoteException {
+        public void playOrPauseSong() throws RemoteException {
             String PLAYORPAUSE = "";
             if (mediaPlayer.isPlaying()) {
                 mediaPlayer.pause();
@@ -198,7 +198,6 @@ public class MusicPlayerService extends Service {
                 PLAYORPAUSE = "PLAY";
                 playingNow = true;
             }
-            return PLAYORPAUSE;
 
         }
 

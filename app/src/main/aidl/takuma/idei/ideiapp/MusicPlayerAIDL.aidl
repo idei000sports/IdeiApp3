@@ -8,7 +8,7 @@ interface MusicPlayerAIDL {
     void setAlbum(in List<String> makedAlbum,String albumArtPath);
     String getAlbumArt();
     //再生関連
-    String playOrPauseSong();
+    void playOrPauseSong();
     void stopSong();
     void setRepert();
     String playNow();

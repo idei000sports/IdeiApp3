@@ -8,7 +8,6 @@ import android.os.Bundle;
 import android.os.IBinder;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
-import android.widget.ImageButton;
 import android.widget.SeekBar;
 import android.widget.Toast;
 
@@ -16,11 +15,7 @@ import takuma.idei.ideiapp.databinding.FragmentMusicplayerBinding;
 
 //プレーヤーの表示部分
 public class MusicPlayerActivity extends AppCompatActivity implements View.OnClickListener {
-
-    private SongData songData;
     public static SeekBar positionBar;
-    private ImageButton playing;
-
     //サービスへのアクセス
     private Intent serviceIntent;
     private MusicPlayerAIDL binder;
@@ -41,6 +36,7 @@ public class MusicPlayerActivity extends AppCompatActivity implements View.OnCli
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        //DataBinding用
         binding = DataBindingUtil.setContentView(this, R.layout.fragment_musicplayer);
         binding.setSongData(new SongData());
         //サービス開き
@@ -52,7 +48,7 @@ public class MusicPlayerActivity extends AppCompatActivity implements View.OnCli
     @Override
     public void onStart() {
         super.onStart();
-        playing = (ImageButton)findViewById(R.id.PlayButton);
+        //ボタン
         findViewById(R.id.PlayButton).setOnClickListener(this);
         findViewById(R.id.SkipNextButton).setOnClickListener(this);
         findViewById(R.id.SkipBackButton).setOnClickListener(this);
@@ -66,6 +62,7 @@ public class MusicPlayerActivity extends AppCompatActivity implements View.OnCli
                     public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                         if (fromUser) {
                             try {
+                                //サービスのプレーヤーの再生位置変更
                                 binder.setSeek(progress);
                             } catch (Exception e) {
 
@@ -93,7 +90,7 @@ public class MusicPlayerActivity extends AppCompatActivity implements View.OnCli
             try {
                 switch (v.getId()) {
                     case R.id.PlayButton:
-                        String PLAYORPAUSE = binder.playOrPauseSong();
+                        binder.playOrPauseSong();
                         break;
                     case R.id.SkipNextButton:
                         binder.skipNext();

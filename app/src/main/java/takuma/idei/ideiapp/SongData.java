@@ -29,11 +29,6 @@ public class SongData extends BaseObservable {
     private int progress;
 
     public SongData() {
-        getServiceInfo();
-    }
-
-
-    public void getServiceInfo() {
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -64,6 +59,7 @@ public class SongData extends BaseObservable {
             }
         }).start();
     }
+
     private Handler handler = new Handler(new Handler.Callback() {
         @Override
         public boolean handleMessage(Message msg) {
