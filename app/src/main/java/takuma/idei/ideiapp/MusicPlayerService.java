@@ -21,14 +21,14 @@ public class MusicPlayerService extends Service {
     private MediaPlayer mediaPlayer;
     private MediaMetadataRetriever mediaMetadataRetriever;
     private String folderPath;
-    private String artist_name;
-    private String album_name;
-    private String title_name;
-    private String albumArtPath;
+    public static String artist_name;
+    public static String album_name;
+    public static String title_name;
+    public static String albumArtPath;
 
     private List<String> album;
     private int next_track_number;
-    private boolean playingNow = false;
+    public static boolean playingNow = false;
     private boolean REPERT = false;
 
 
@@ -68,10 +68,7 @@ public class MusicPlayerService extends Service {
 
         folderPath = songPath;
         makeSongData();
-        SongData songData = new SongData();
-        songData.setTitle(title_name);
-        songData.setArtist(artist_name);
-        songData.setAlbum(album_name);
+
 
         try {
             if (mediaPlayer == null || !mediaPlayer.isPlaying()) {
@@ -192,10 +189,12 @@ public class MusicPlayerService extends Service {
             if (mediaPlayer.isPlaying()) {
                 mediaPlayer.pause();
                 PLAYORPAUSE = "PAUSE";
+                playingNow = false;
 
             } else {
                 mediaPlayer.start();
                 PLAYORPAUSE = "PLAY";
+                playingNow = true;
             }
             return PLAYORPAUSE;
 

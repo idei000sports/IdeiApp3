@@ -4,6 +4,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <!-- Binding objects -->
     <data>
+        <import type="takuma.idei.ideiapp.R" />
         <variable
             name="SongData"
             type="takuma.idei.ideiapp.SongData" />
@@ -75,7 +76,8 @@
             android:background="@null"
             android:scaleType="centerInside"
             android:textAlignment="center"
-            app:srcCompat="@drawable/playbutton" />
+            app:srcCompat="@{SongData.playOrPause}"/>
+
 
         <Space
             android:layout_width="0dp"

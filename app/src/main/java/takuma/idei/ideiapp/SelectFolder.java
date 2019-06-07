@@ -7,7 +7,6 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.os.IBinder;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,7 +14,6 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -24,16 +22,12 @@ import java.util.List;
 import static android.content.Context.BIND_AUTO_CREATE;
 
 public class SelectFolder extends Fragment implements View.OnClickListener{
-    private String folder;
     private String folderPath;
     private TextView folderPathTextView;
     private List<String> songList = new ArrayList<>();
-    private List<String> folderList = new ArrayList<>();
     private ListView lv;
     private File[] files;
-    private FragmentManager fragmentManager;
     private Intent serviceIntent;
-    private TextView mTextMessage;
     private MusicPlayerAIDL binder;
     private ServiceConnection connection = new ServiceConnection() {
         @Override
@@ -59,7 +53,6 @@ public class SelectFolder extends Fragment implements View.OnClickListener{
 
 
     public void makeFolderList(String folderPath, View rootView){
-        Toast.makeText(getContext(), "now : " + folderPath, Toast.LENGTH_LONG).show();
         folderPathTextView.setText(folderPath);
         files = new File(folderPath).listFiles();
         if(files != null){
@@ -79,7 +72,6 @@ public class SelectFolder extends Fragment implements View.OnClickListener{
                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                     ListView listView = (ListView) parent;
                     String item = (String) listView.getItemAtPosition(position);
-                    Toast.makeText(getContext(), folderPath + "/" + item, Toast.LENGTH_SHORT).show();
                     if(item.endsWith(".mp3")) {
                         //mp3だった場合
                         int trackNumber = songList.indexOf(item);

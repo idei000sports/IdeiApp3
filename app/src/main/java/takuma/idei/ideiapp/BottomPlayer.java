@@ -13,8 +13,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
 
-import java.util.ArrayList;
-
 import takuma.idei.ideiapp.databinding.FragmentBottomplayerBinding;
 
 public class BottomPlayer extends Fragment implements View.OnClickListener{
@@ -51,54 +49,9 @@ public class BottomPlayer extends Fragment implements View.OnClickListener{
         songData = new SongData();
         binding.setSongData(songData);
 
+        rootView.findViewById(R.id.bottom_player_play).setOnClickListener(this);
+        rootView.findViewById(R.id.bottom_player_up).setOnClickListener(this);
 
-
-
-
-        bottomPlayerPlay = rootView.findViewById(R.id.bottom_player_play);
-        upButton = rootView.findViewById(R.id.bottom_player_up);
-
-        bottomPlayerPlay.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                try {
-                    String PLAYORPAUSE = binder.playOrPauseSong();
-                }catch (Exception e){
-
-                }
-            }
-        });
-
-        upButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent i = new Intent(getActivity(),MusicPlayerActivity.class);
-                startActivity(i);
-            }
-        });
-
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                while (true) {
-                    try {
-
-                        ArrayList<String> song = (ArrayList<String>)binder.getNowSongData();
-                        songData.setTitle(song.get(2));
-                        songData.setArtist(song.get(0));
-                        String playNow = binder.playNow();
-                        if (playNow.equals("PLAY")) {
-                            bottomPlayerPlay.setImageResource(R.drawable.pause);
-                        } else if (playNow.equals("PAUSE")) {
-                            bottomPlayerPlay.setImageResource(R.drawable.playbutton);
-                        }
-
-
-                        Thread.sleep(1000);
-                    } catch (InterruptedException e) {} catch (Exception e) { }
-                }
-            }
-        }).start();
 
         return rootView;
     }
@@ -111,9 +64,22 @@ public class BottomPlayer extends Fragment implements View.OnClickListener{
     }
 
 
-    @Override
-    public void onClick (View v){
+    public void onClick(View v) {
+        if(v != null) {
+            try {
+                switch (v.getId()) {
+                    case R.id.bottom_player_play:
+                        String PLAYORPAUSE = binder.playOrPauseSong();
+                        break;
+                    case R.id.bottom_player_up:
+                        Intent i = new Intent(getActivity(),MusicPlayerActivity.class);
+                        startActivity(i);
+                        break;
+                }
+            }catch (Exception e) {
 
+            }
+        }
     }
 
 }

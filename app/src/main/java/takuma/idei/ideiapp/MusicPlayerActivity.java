@@ -16,28 +16,21 @@ import android.widget.ImageView;
 import android.widget.SeekBar;
 import android.widget.Toast;
 
-import java.util.ArrayList;
-
 import takuma.idei.ideiapp.databinding.FragmentMusicplayerBinding;
 
 //プレーヤーの表示部分
 public class MusicPlayerActivity extends AppCompatActivity implements View.OnClickListener {
 
     private ImageView albumArt;
-    private ImageButton playButton;
-    private ImageButton skipNextButton;
-    private ImageButton skipBackButton;
-    private ImageButton finishActivity;
-    private ImageButton repertButton;
     private SongData songData;
     private SeekBar positionBar;
     private SeekBarData seekBarData;
+    private ImageButton playing;
 
     //サービスへのアクセス
     private Intent serviceIntent;
     private MusicPlayerAIDL binder;
     //DataBinding用
-    //private SongData songData;
     private FragmentMusicplayerBinding binding;
 
     private ServiceConnection connection = new ServiceConnection() {
@@ -56,10 +49,10 @@ public class MusicPlayerActivity extends AppCompatActivity implements View.OnCli
         super.onCreate(savedInstanceState);
         binding = DataBindingUtil.setContentView(this, R.layout.fragment_musicplayer);
 
+
         songData = new SongData();
         binding.setSongData(songData);
-        songData.setArtist("kuso");
-        songData.setTitle("syonben");
+
 
         //サービス開き
         serviceIntent = new Intent(this, MusicPlayerService.class);
@@ -70,70 +63,20 @@ public class MusicPlayerActivity extends AppCompatActivity implements View.OnCli
     @Override
     public void onStart() {
         super.onStart();
-        playButton = (ImageButton)findViewById(R.id.PlayButton);
-        skipNextButton = (ImageButton)findViewById(R.id.SkipNextButton);
-        skipBackButton = (ImageButton)findViewById(R.id.SkipBackButton);
-        finishActivity = (ImageButton)findViewById(R.id.FinishActivity);
-        repertButton = (ImageButton)findViewById(R.id.Repeat);
+        playing = (ImageButton)findViewById(R.id.PlayButton);
+        findViewById(R.id.PlayButton).setOnClickListener(this);
+        findViewById(R.id.SkipNextButton).setOnClickListener(this);
+        findViewById(R.id.SkipBackButton).setOnClickListener(this);
+        findViewById(R.id.FinishActivity).setOnClickListener(this);
+        findViewById(R.id.Repeat).setOnClickListener(this);
         albumArt = (ImageView)findViewById(R.id.AlbumArt);
+        try {
+            albumArt.setImageBitmap(BitmapFactory.decodeFile(binder.getAlbumArt()));
+        }catch (Exception e) {
+
+        }
+
         positionBar = (SeekBar)findViewById(R.id.positionBar);
-
-        playButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                try {
-                    String PLAYORPAUSE = binder.playOrPauseSong();
-                }catch (Exception e) {
-
-                }
-
-            }
-        });
-
-        skipNextButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                try {
-                    binder.skipNext();
-                }catch (Exception e) {
-
-                }
-            }
-        });
-        skipBackButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                try {
-                    binder.skipBack();
-                }catch (Exception e) {
-
-                }
-            }
-        });
-        repertButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                try {
-                    binder.setRepert();
-                    Toast.makeText(getApplicationContext(), "リピートをONにしました", Toast.LENGTH_SHORT).show();
-                } catch (Exception e) {
-
-                }
-            }
-        });
-
-
-
-
-
-        finishActivity.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                finish();
-            }
-        });
-
-
 
 
         positionBar.setOnSeekBarChangeListener(
@@ -167,29 +110,8 @@ public class MusicPlayerActivity extends AppCompatActivity implements View.OnCli
             public void run() {
                 while (true) {
                     try {
-                        //秒ごとにサービスの状態を取得するスレッド
 
-                        //曲のメタデータとアルバムアートをDataBindingに
-                        ArrayList<String> song = (ArrayList<String>)binder.getNowSongData();
-                        //songData = new SongData(song.get(0), song.get(1), song.get(2));
-                        //binding.setSongData(songData);
-
-                        songData.setTitle(song.get(2));
-                        songData.setArtist(song.get(0));
-                        songData.setAlbum(song.get(1));
-
-
-                        //PathからBitmapへ変換してset
-                        String albumArtPath = binder.getAlbumArt();
-                        albumArt.setImageBitmap(BitmapFactory.decodeFile(albumArtPath));
-
-                        //再生中か否か
-                        String playNow = binder.playNow();
-                        if (playNow.equals("PLAY")) {
-                            playButton.setImageResource(R.drawable.pause);
-                        } else if (playNow.equals("PAUSE")) {
-                            playButton.setImageResource(R.drawable.playbutton);
-                        }
+                        //albumArt.setImageBitmap(BitmapFactory.decodeFile(binder.getAlbumArt()));
 
                         //曲の長さ
                         seekBarData = new SeekBarData(binder.getTotalTime());
@@ -205,7 +127,32 @@ public class MusicPlayerActivity extends AppCompatActivity implements View.OnCli
         }).start();
 
     }
+    public void onClick(View v) {
+        if(v != null) {
+            try {
+                switch (v.getId()) {
+                    case R.id.PlayButton:
+                        String PLAYORPAUSE = binder.playOrPauseSong();
+                        break;
+                    case R.id.SkipNextButton:
+                        binder.skipNext();
+                        break;
+                    case R.id.SkipBackButton:
+                        binder.skipBack();
+                        break;
+                    case R.id.Repeat:
+                        binder.setRepert();
+                        Toast.makeText(getApplicationContext(), "リピートをONにしました", Toast.LENGTH_SHORT).show();
+                        break;
+                    case R.id.FinishActivity:
+                        finish();
+                        break;
+                }
+            }catch (Exception e) {
 
+            }
+        }
+    }
 
 
     private Handler handler = new Handler(new Handler.Callback() {
@@ -238,10 +185,6 @@ public class MusicPlayerActivity extends AppCompatActivity implements View.OnCli
         return timeLabel;
     }
 
-
-    public void onClick(View view) {
-
-    }
 
     @Override
     public void onDestroy() {

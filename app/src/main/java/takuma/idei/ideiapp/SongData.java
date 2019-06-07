@@ -2,22 +2,66 @@ package takuma.idei.ideiapp;
 
 import android.databinding.BaseObservable;
 import android.databinding.Bindable;
-import android.databinding.PropertyChangeRegistry;
+import android.databinding.BindingAdapter;
+import android.widget.ImageButton;
 
 public class SongData extends BaseObservable {
-    private static String artist;
-    private static String album;
-    private static String title;
-    private boolean playingNow;
-    private String albumArt;
-    PropertyChangeRegistry propertyChangeRegistry;
-    public SongData() {
+    private String artist;
+    private String album;
+    private String title;
+    private static boolean playingNow;
+    private int playOrPause;
 
+
+    private String albumArt;
+    private static ImageButton button;
+
+    /*
+    albumArt = (ImageView)findViewById(R.id.AlbumArt);
+    albumArt.setImageBitmap(BitmapFactory.decodeFile(binder.getAlbumArt()));
+
+     */
+
+
+    public SongData() {
+        playOrPause = R.drawable.playbutton;
+        getServiceInfo();
     }
-    public SongData(String artist, String album, String title){
-        this.artist = artist;
-        this.album = album;
-        this.title = title;
+
+    @BindingAdapter("app:srcCompat")
+    public static void srcCompat(ImageButton button, int playOrPause) {
+        button.setImageResource(playOrPause);
+    }
+
+    public void getServiceInfo() {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                while (true) {
+                    try {
+                        setAlbum(MusicPlayerService.album_name);
+                        setTitle(MusicPlayerService.title_name);
+                        setArtist(MusicPlayerService.artist_name);
+                        setPlayingNow(MusicPlayerService.playingNow);
+
+                        if (playingNow == true) {
+                            setPlayOrPause(R.drawable.pause);
+                        } else {
+                            setPlayOrPause(R.drawable.playbutton);
+                        }
+
+
+                        Thread.sleep(1000);
+                    } catch (InterruptedException e) {} catch (Exception e) { }
+                }
+            }
+        }).start();
+    }
+
+    public SongData(String art, String alb, String tit){
+        artist = art;
+        album = alb;
+        title = tit;
     }
 
     @Bindable
@@ -25,8 +69,8 @@ public class SongData extends BaseObservable {
         return artist;
     }
 
-    public void setArtist(String artist) {
-        this.artist = artist;
+    public void setArtist(String art) {
+        artist = art;
         notifyPropertyChanged(takuma.idei.ideiapp.BR.artist);
     }
 
@@ -35,8 +79,8 @@ public class SongData extends BaseObservable {
         return album;
     }
 
-    public void setAlbum(String album) {
-        this.album = album;
+    public void setAlbum(String alb) {
+        album = alb;
         notifyPropertyChanged(takuma.idei.ideiapp.BR.album);
     }
 
@@ -45,8 +89,8 @@ public class SongData extends BaseObservable {
         return title;
     }
 
-    public void setTitle(String title) {
-        this.title = title;
+    public void setTitle(String tit) {
+        title = tit;
         notifyPropertyChanged(takuma.idei.ideiapp.BR.title);
     }
 
@@ -60,13 +104,22 @@ public class SongData extends BaseObservable {
         notifyPropertyChanged(takuma.idei.ideiapp.BR.playingNow);
     }
 
-    @Bindable
     public String getAlbumArt() {
         return albumArt;
     }
 
     public void setAlbumArt(String albumArt) {
         this.albumArt = albumArt;
-        notifyPropertyChanged(takuma.idei.ideiapp.BR.albumArt);
+    }
+
+
+    @Bindable
+    public int getPlayOrPause() {
+        return playOrPause;
+    }
+
+    public void setPlayOrPause(int playOrPause) {
+        this.playOrPause = playOrPause;
+        notifyPropertyChanged(takuma.idei.ideiapp.BR.playOrPause);
     }
 }

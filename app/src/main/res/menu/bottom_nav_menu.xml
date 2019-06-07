@@ -13,10 +13,6 @@
         android:id="@+id/navigation_selectFolder"
         android:icon="@drawable/list"
         android:title="SELECTFOLDER" />
-    <item
-        android:id="@+id/navigation_notifications"
-        android:icon="@drawable/playbutton"
-        android:title="@string/title_notifications" />
 
 
 </menu>

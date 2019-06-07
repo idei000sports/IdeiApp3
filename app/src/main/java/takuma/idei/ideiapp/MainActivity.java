@@ -2,7 +2,6 @@ package takuma.idei.ideiapp;
 
 
 import android.Manifest;
-import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
@@ -10,24 +9,20 @@ import android.support.annotation.NonNull;
 import android.support.annotation.RequiresApi;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
-import android.view.View;
 
 public class MainActivity extends AppCompatActivity {
-    //private TextView mTextMessage;
     private Fragment fragment;
     private Fragment bottomPlayerFragment;
-    private FragmentActivity fragmentActivity;
     private FragmentManager fragmentManager;
-    private View activity;
+
+
+
     private final static int PERMISSON_REQUEST_CODE = 2;
-    private Intent music_player2;
-    private String memo = "githubテスト";
 
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
             = new BottomNavigationView.OnNavigationItemSelectedListener() {
@@ -36,19 +31,12 @@ public class MainActivity extends AppCompatActivity {
         public boolean onNavigationItemSelected(@NonNull MenuItem item) {
             switch (item.getItemId()) {
                 case R.id.navigation_home:
-                    //mTextMessage.setText(R.string.title_home);
                     fragment = new Home();
                     break;
                 case R.id.navigation_dashboard:
-                    //mTextMessage.setText(R.string.title_dashboard);
                     fragment = new Dashboard();
                     break;
-                case R.id.navigation_notifications:
-                    Intent i = new Intent(getApplicationContext(),MusicPlayerActivity.class);
-                    startActivity(i);
-                    //break;
                 case R.id.navigation_selectFolder:
-                    //mTextMessage.setText("folder");
                     fragment = new SelectFolder();
                     break;
             }
@@ -62,18 +50,20 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         setContentView(R.layout.activity_main);
         requestReadStorage();
+
 
         fragmentManager = getSupportFragmentManager();
         fragment = new Home();
         bottomPlayerFragment = new BottomPlayer();
 
 
+
         BottomNavigationView navView = findViewById(R.id.nav_view);
-        //mTextMessage = findViewById(R.id.message);
         navView.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
+
+
     }
 
     @RequiresApi(api = Build.VERSION_CODES.M)
