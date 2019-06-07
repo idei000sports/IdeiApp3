@@ -18,13 +18,15 @@ import static takuma.idei.ideiapp.Home.TAG;
 
 public class MusicPlayerService extends Service {
     private SQLiteDatabase mDb;
-    private MediaPlayer mediaPlayer;
+    public static MediaPlayer mediaPlayer;
     private MediaMetadataRetriever mediaMetadataRetriever;
     private String folderPath;
     public static String artist_name;
     public static String album_name;
     public static String title_name;
     public static String albumArtPath;
+    public static int totalTime;
+    public static int currentPosition;
 
     private List<String> album;
     private int next_track_number;
@@ -38,8 +40,6 @@ public class MusicPlayerService extends Service {
         mediaPlayer = new MediaPlayer();
         mediaPlayer.seekTo(0);
     }
-
-
 
 
 
@@ -77,6 +77,8 @@ public class MusicPlayerService extends Service {
                 mediaPlayer.setDataSource(songPath);
                 mediaPlayer.prepare();
                 mediaPlayer.start();
+                totalTime = mediaPlayer.getDuration();
+                currentPosition = mediaPlayer.getCurrentPosition();
                 playingNow = true;
 
                 //再生が終わったとき
