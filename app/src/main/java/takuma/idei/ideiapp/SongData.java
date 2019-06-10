@@ -17,10 +17,10 @@ public class SongData extends BaseObservable {
     private static boolean playingNow;
     private int playOrPause;
 
-    private static ImageView albumArtView;
+    //private static ImageView albumArtView;
     private Bitmap albumArt;
 
-    private static ImageButton button;
+    //private static ImageButton button;
 
     private int totalTime;
     private int currentPosition;
@@ -29,57 +29,53 @@ public class SongData extends BaseObservable {
     private int progress;
 
     public SongData() {
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                while (true) {
-                    try {
-                        setAlbum(MusicPlayerService.album_name);
-                        setTitle(MusicPlayerService.title_name);
-                        setArtist(MusicPlayerService.artist_name);
-                        setPlayingNow(MusicPlayerService.playingNow);
-                        setAlbumArt(BitmapFactory.decodeFile(MusicPlayerService.albumArtPath));
-                        setTotalTime(MusicPlayerService.totalTime);
-                        currentPosition = MusicPlayerService.mediaPlayer.getCurrentPosition();
+        new Thread(() -> {
+            while (true) try {
+                setAlbum(MusicPlayerService.album_name);
+                setTitle(MusicPlayerService.title_name);
+                setArtist(MusicPlayerService.artist_name);
+                setPlayingNow(MusicPlayerService.playingNow);
+                setAlbumArt(BitmapFactory.decodeFile(MusicPlayerService.albumArtPath));
+                setTotalTime(MusicPlayerService.totalTime);
+                currentPosition = MusicPlayerService.mediaPlayer.getCurrentPosition();
 
 
-                        if (playingNow == true) {
-                            setPlayOrPause(R.drawable.pause);
-                        } else {
-                            setPlayOrPause(R.drawable.playbutton);
-                        }
-
-                        Message msg = new Message();
-                        msg.what = currentPosition;
-                        handler.sendMessage(msg);
-
-                        Thread.sleep(1000);
-                    } catch (InterruptedException e) {} catch (Exception e) { }
+                if (getPlayingNow()) {
+                    setPlayOrPause(R.drawable.pause);
+                } else {
+                    setPlayOrPause(R.drawable.playbutton);
                 }
+
+                Message msg = new Message();
+                msg.what = currentPosition;
+                handler.sendMessage(msg);
+
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            } catch (Exception e) {
+                e.printStackTrace();
             }
         }).start();
     }
 
-    private Handler handler = new Handler(new Handler.Callback() {
-        @Override
-        public boolean handleMessage(Message msg) {
-            int currentPosition = msg.what;
-            // 再生位置を更新
-            //MusicPlayerActivity.positionBar.setProgress(currentPosition);
-            setProgress(currentPosition);
+    private Handler handler = new Handler(msg -> {
+        int currentPosition = msg.what;
+        // 再生位置を更新
+        //MusicPlayerActivity.positionBar.setProgress(currentPosition);
+        setProgress(currentPosition);
 
-            String elapsedTime = createTimeLabel(currentPosition);
-            String remainingTime = createTimeLabel(getTotalTime()-currentPosition);
+        String elapsedTime = createTimeLabel(currentPosition);
+        String remainingTime = createTimeLabel(getTotalTime()-currentPosition);
 
-            setElapsedTimeLabel(elapsedTime);
-            setRemainingTimeLabel(remainingTime);
+        setElapsedTimeLabel(elapsedTime);
+        setRemainingTimeLabel(remainingTime);
 
-            return true;
-        }
+        return true;
     });
 
-    public String createTimeLabel(int time) {
-        String timeLabel = "";
+    private String createTimeLabel(int time) {
+        String timeLabel;
         int min = time / 1000 / 60;
         int sec = time / 1000 % 60;
 
@@ -112,7 +108,7 @@ public class SongData extends BaseObservable {
     }
 
     public void setArtist(String art) {
-        artist = art;
+        this.artist = art;
         notifyPropertyChanged(takuma.idei.ideiapp.BR.artist);
     }
 
@@ -141,7 +137,7 @@ public class SongData extends BaseObservable {
         return playingNow;
     }
 
-    public void setPlayingNow(Boolean playingNow) {
+    private void setPlayingNow(Boolean playingNow) {
         this.playingNow = playingNow;
         notifyPropertyChanged(takuma.idei.ideiapp.BR.playingNow);
     }
@@ -151,7 +147,7 @@ public class SongData extends BaseObservable {
         return albumArt;
     }
 
-    public void setAlbumArt(Bitmap albumArt) {
+    private void setAlbumArt(Bitmap albumArt) {
         this.albumArt = albumArt;
         notifyPropertyChanged(takuma.idei.ideiapp.BR.albumArt);
     }
@@ -162,7 +158,7 @@ public class SongData extends BaseObservable {
         return playOrPause;
     }
 
-    public void setPlayOrPause(int playOrPause) {
+    private void setPlayOrPause(int playOrPause) {
         this.playOrPause = playOrPause;
         notifyPropertyChanged(takuma.idei.ideiapp.BR.playOrPause);
     }
@@ -182,7 +178,7 @@ public class SongData extends BaseObservable {
         return elapsedTimeLabel;
     }
 
-    public void setElapsedTimeLabel(String elapsedTimeLabel) {
+    private void setElapsedTimeLabel(String elapsedTimeLabel) {
         this.elapsedTimeLabel = elapsedTimeLabel;
         notifyPropertyChanged(takuma.idei.ideiapp.BR.elapsedTimeLabel);
     }
@@ -192,7 +188,7 @@ public class SongData extends BaseObservable {
         return remainingTimeLabel;
     }
 
-    public void setRemainingTimeLabel(String remainingTimeLabel) {
+    private void setRemainingTimeLabel(String remainingTimeLabel) {
         this.remainingTimeLabel = remainingTimeLabel;
         notifyPropertyChanged(takuma.idei.ideiapp.BR.remainingTimeLabel);
     }

@@ -6,11 +6,11 @@ import android.content.ServiceConnection;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.IBinder;
+import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -18,16 +18,18 @@ import android.widget.TextView;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import static android.content.Context.BIND_AUTO_CREATE;
 
 public class SelectFolder extends Fragment implements View.OnClickListener{
-    private String folderPath;
+    //表示
     private TextView folderPathTextView;
-    private List<String> songList = new ArrayList<>();
-    private ListView lv;
-    private File[] files;
-    private Intent serviceIntent;
+    private List<String> songAndFolderList;
+    //songAndFolderListから選択したファイル以降を抽出
+    private ArrayList<String> playList;
+
+
     private MusicPlayerAIDL binder;
     private ServiceConnection connection = new ServiceConnection() {
         @Override
@@ -41,60 +43,78 @@ public class SelectFolder extends Fragment implements View.OnClickListener{
         }
     };
 
-
-
     @Override
     public void onCreate(Bundle bundle) {
         super.onCreate(bundle);
-        serviceIntent = new Intent(getActivity(), MusicPlayerService.class);
-        getActivity().bindService(serviceIntent, connection, BIND_AUTO_CREATE);
+        //サービス接続
+        Intent serviceIntent = new Intent(getActivity(), MusicPlayerService.class);
+        Objects.requireNonNull(getActivity()).bindService(serviceIntent, connection, BIND_AUTO_CREATE);
 
     }
 
 
-    public void makeFolderList(String folderPath, View rootView){
-        folderPathTextView.setText(folderPath);
-        files = new File(folderPath).listFiles();
-        if(files != null){
-            for(int i = 0; i < files.length; i++){
-                if (files[i].isFile() && files[i].getName().endsWith(".mp3") || files[i].isDirectory()) {
-                    songList.add(files[i].getName());
+    @Override
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState){
+        final View rootView = inflater.inflate(R.layout.fragment_selectfolder, container, false);
+        //最深部
+        String storagePath = Environment.getExternalStorageDirectory().getPath();
+        //storagePath/Music
+        String musicFolderPath = storagePath + "/Music";
+
+        folderPathTextView = rootView.findViewById(R.id.folderPath);
+        folderPathTextView.setText(musicFolderPath);
+
+        makeFolderList(musicFolderPath, rootView);
+
+        return rootView;
+    }
+    public void makeFolderList(String musicFolderPath, View rootView){
+        songAndFolderList = new ArrayList<>();
+        //現在のフォルダーを表示
+        folderPathTextView.setText(musicFolderPath);
+
+        //フォルダーのファイルをリスト化
+        //fileListからmp3とフォルダを抽出したのがsongAndFolderList
+        File[] fileList = new File(musicFolderPath).listFiles();
+
+        //ファイルが入っていれば
+        if(fileList != null){
+            for (File file : fileList) {
+                if (file.isFile() && file.getName().endsWith(".mp3") || file.isDirectory()) {
+                    //mp3ファイルorフォルダーなら
+                    songAndFolderList.add(file.getName());
                 }
 
             }
 
-            lv = (ListView)rootView.findViewById(R.id.songlist);
-            ArrayAdapter<String> adapter = new ArrayAdapter<String>(getContext(), android.R.layout.simple_expandable_list_item_1, songList);
-            lv.setAdapter(adapter);
+            ListView listView = rootView.findViewById(R.id.songlist);
+            ArrayAdapter<String> adapter = new ArrayAdapter<>(Objects.requireNonNull(getContext()), android.R.layout.simple_expandable_list_item_1, songAndFolderList);
+            listView.setAdapter(adapter);
 
-            lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                @Override
-                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                    ListView listView = (ListView) parent;
-                    String item = (String) listView.getItemAtPosition(position);
-                    if(item.endsWith(".mp3")) {
-                        //mp3だった場合
-                        int trackNumber = songList.indexOf(item);
-                        ArrayList<String> playList = new ArrayList<>();
-
-                        for (int i = trackNumber; i < songList.size(); i++) {
-                            if(songList.get(i).endsWith(".mp3")) {
-                                playList.add(folderPath + "/" + songList.get(i));
-                            }
+            listView.setOnItemClickListener((parent, view, position, id) -> {
+                ListView listView1 = (ListView) parent;
+                String item = (String) listView1.getItemAtPosition(position);
+                if(item.endsWith(".mp3")) {
+                    //mp3だった場合
+                    int trackNumber = songAndFolderList.indexOf(item);
+                    playList = new ArrayList<>();
+                    //選択したファイルのtrackNumber以降のファイルをプレイリスト化
+                    for (int i = trackNumber; i < songAndFolderList.size(); i++) {
+                        if(songAndFolderList.get(i).endsWith(".mp3")) {
+                            playList.add(musicFolderPath + "/" + songAndFolderList.get(i));
                         }
-
-                        try {
-                            String albumArtPath = folderPath + "/" + "folder.jpg";
-                            binder.setAlbum(playList, albumArtPath);
-                        }catch (Exception e) {
-
-                        }
-                    } else if (item.equals("folder.jpg")) {
-
-                    } else {
-                        songList.clear();
-                        makeFolderList(folderPath + "/" + item, rootView);
                     }
+
+                    try {
+                        String albumArtPath = musicFolderPath + "/" + "folder.jpg";
+                        binder.setPlayList(playList, albumArtPath);
+                    }catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                } else {
+                    //ディレクトリ名を足してフォルダーを開き直す
+                    songAndFolderList.clear();
+                    makeFolderList(musicFolderPath + "/" + item, rootView);
                 }
             });
         }
@@ -102,25 +122,8 @@ public class SelectFolder extends Fragment implements View.OnClickListener{
 
     }
 
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState){
-        final View rootView = inflater.inflate(R.layout.fragment_selectfolder, container, false);
-        folderPath = Environment.getExternalStorageDirectory().getPath();
-        folderPath = folderPath + "/Music";
-
-        folderPathTextView = (TextView)rootView.findViewById(R.id.folderPath);
-        folderPathTextView.setText(folderPath);
-
-
-        makeFolderList(folderPath, rootView);
-
-
-        return rootView;
-    }
-
 
     @Override
     public void onClick (View v){
-
     }
 }

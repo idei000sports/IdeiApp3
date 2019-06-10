@@ -8,30 +8,32 @@ import android.database.sqlite.SQLiteDatabase;
 import android.media.MediaMetadataRetriever;
 import android.media.MediaPlayer;
 import android.os.IBinder;
-import android.os.RemoteException;
-import android.util.Log;
 
-import java.util.ArrayList;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
-
-import static takuma.idei.ideiapp.Home.TAG;
+import java.util.Locale;
 
 public class MusicPlayerService extends Service {
-    private SQLiteDatabase mDb;
+    //プレーヤー
     public static MediaPlayer mediaPlayer;
-    private MediaMetadataRetriever mediaMetadataRetriever;
-    private String folderPath;
+    //プレイリスト
+    private List<String> playList;
+    //次の番号
+    private int next_track_number;
+    //タグ
     public static String artist_name;
     public static String album_name;
     public static String title_name;
     public static String albumArtPath;
+    //曲の長さ
     public static int totalTime;
+    //現在の再生位置
     public static int currentPosition;
-
-    private List<String> album;
-    private int next_track_number;
+    //再生中か
     public static boolean playingNow = false;
-    private boolean REPERT = false;
+    //リピートを設定しているか
+    private boolean REPEAT = false;
 
 
     @Override
@@ -40,267 +42,182 @@ public class MusicPlayerService extends Service {
         mediaPlayer = new MediaPlayer();
         mediaPlayer.seekTo(0);
     }
+    //メイン、作ったプレイリストを再生
+    private void playPlayList() {
+        String songPath = playList.get(next_track_number);
+        next_track_number += 1;
+        makeSongData(songPath);
 
+        playSong(songPath);
 
-
-
-    public void makeSongData() {
-        mediaMetadataRetriever = new MediaMetadataRetriever();
+        //再生が終わったとき
+        mediaPlayer.setOnCompletionListener(mp -> {
+            makeHistory();
+            makeHistoryDate();
+            stopSong();
+            if(REPEAT) next_track_number -= 1;
+            playPlayList();
+        });
+    }
+    //履歴の作成
+    private void makeHistory() {
+        int count = 0;
+        PlayDataBase playDataBase = new PlayDataBase(getApplicationContext());
+        SQLiteDatabase sqLiteDatabase = playDataBase.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        Cursor cursor = null;
         try {
-            mediaMetadataRetriever.setDataSource(folderPath);
+            String sql = "SELECT count FROM count_table WHERE song = '" + title_name + "' AND artist = '" + artist_name + "';";
+            cursor = sqLiteDatabase.rawQuery(sql, null);
+
+            //再生回数が記録されているかチェック、なければcountは0のまま
+            if (cursor.moveToFirst()) {
+                count = cursor.getInt(cursor.getColumnIndex("count"));
+            }
+
+            if (count > 0) {
+                count += 1;
+                int nextAutoIncrement = 0;
+                sql = "SELECT MAX(id) FROM count_table;";
+                cursor = sqLiteDatabase.rawQuery(sql, null);
+                if(cursor.moveToNext()) {
+                    nextAutoIncrement = cursor.getInt(cursor.getColumnIndex("MAX(id)")) + 1;
+                }
+
+                values.put("count", count);
+                values.put("id", nextAutoIncrement);
+
+                sqLiteDatabase.update("count_table", values, "song = ? AND artist = ? AND album = ?", new String[]{title_name, artist_name, album_name});
+
+            } else if (count == 0){
+                values.put("song", title_name);
+                values.put("artist", artist_name);
+                values.put("album", album_name);
+                values.put("album_art_path", albumArtPath);
+                values.put("count", 1);
+                sqLiteDatabase.insert("count_table", null, values);
+            }
+        }  catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            if (cursor != null) cursor.close();
+        }
+
+    }
+
+    private void makeHistoryDate() {
+        PlayDataBase playDataBase = new PlayDataBase(getApplicationContext());
+        SQLiteDatabase sqLiteDatabase = playDataBase.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        try {
+            values.put("artist", artist_name);
+            values.put("album", album_name);
+            values.put("album_art_path", albumArtPath);
+            values.put("date", getDateTime());
+            sqLiteDatabase.insert("count_and_date_table", null, values);
+        }  catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+    private String getDateTime() {
+        SimpleDateFormat dateFormat = new SimpleDateFormat(
+                "yyyy-MM-dd HH:mm:ss", Locale.getDefault());
+        Date date = new Date();
+        return dateFormat.format(date);
+    }
+
+
+    //タグ情報をstaticフィールドに
+    private void makeSongData(String songPath) {
+        MediaMetadataRetriever mediaMetadataRetriever = new MediaMetadataRetriever();
+        try {
+            mediaMetadataRetriever.setDataSource(songPath);
             title_name = mediaMetadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_TITLE);
             artist_name = mediaMetadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ARTIST);
             album_name = mediaMetadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ALBUM);
         } catch (Exception e) {
+            e.printStackTrace();
         }
     }
-
-
-    public String getAlbumSong(int track) {
-        String songPath = album.get(track);
-        return songPath;
-    }
-
-    public void playAlbum() {
-
-        String songPath = getAlbumSong(next_track_number);
-        next_track_number = next_track_number + 1;
-
-        folderPath = songPath;
-        makeSongData();
-
-
+    //再生
+    private void playSong(String songPath) {
         try {
-            if (mediaPlayer == null || !mediaPlayer.isPlaying()) {
-
-                mediaPlayer = new MediaPlayer();
-                mediaPlayer.setDataSource(songPath);
-                mediaPlayer.prepare();
-                mediaPlayer.start();
-                totalTime = mediaPlayer.getDuration();
-                currentPosition = mediaPlayer.getCurrentPosition();
-                playingNow = true;
-
-                //再生が終わったとき
-                mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-                    @Override
-                    public void onCompletion(MediaPlayer mp) {
-                        try {
-                            makeSongData();
-                            makeHistory();
-                            mediaPlayer.stop();
-                            mediaPlayer.reset();
-                            mediaPlayer.release();
-                            mediaPlayer = null;
-                            playingNow = false;
-                            if(REPERT == true) {
-                                next_track_number = next_track_number -1;
-                            }
-                            playAlbum();
-                        }catch (Exception e) {
-
-                        }
-                    }
-                });
-
-
-            } else {
-
-            }
+            mediaPlayer = new MediaPlayer();
+            mediaPlayer.setDataSource(songPath);
+            mediaPlayer.prepare();
+            mediaPlayer.start();
+            totalTime = mediaPlayer.getDuration();
+            currentPosition = mediaPlayer.getCurrentPosition();
+            playingNow = true;
         }catch (Exception e) {
-
+            e.printStackTrace();
         }
     }
-
-    public void makeHistory() {
-        int count = 0;
-        PlayDataBase hlpr = new PlayDataBase(getApplicationContext());
-        mDb = hlpr.getWritableDatabase();
-        ContentValues values = new ContentValues();
-
-        try {
-            // rawQueryというSELECT専用メソッドを使用してデータを取得する
-
-            String sql = "SELECT count FROM count_table WHERE song = '" + title_name + "' AND artist = '" + artist_name + "';";
-            Cursor cursor = mDb.rawQuery(sql, null);
-
-
-            // Cursorの先頭行があるかどうか確認
-            boolean next = cursor.moveToFirst();
-
-            // 取得した全ての行を取得
-            while (next) {
-                // 取得したカラムの順番(0から始まる)と型を指定してデータを取得する
-                count = cursor.getInt(cursor.getColumnIndex("count"));
-
-                // 次の行が存在するか確認
-                next = cursor.moveToNext();
-
-                Log.e(TAG, "makeHistoryのwhile中のcount" + count);
-
-            }
-        } catch (NullPointerException e) {
-            count = 0;
-        } catch (Exception e) {
-
-        }
-
-        if (count > 0) {
-            int newCount = count + 1;
-            int nextAutoIncrement = 0;
-            String sql = "SELECT MAX(id) FROM count_table;";
-            Cursor cursor = mDb.rawQuery(sql, null);
-            boolean next = cursor.moveToNext();
-            while(next) {
-                nextAutoIncrement = cursor.getInt(cursor.getColumnIndex("MAX(id)"));
-                nextAutoIncrement += 1;
-                next = cursor.moveToNext();
-            }
-
-            values.put("count", newCount);
-            values.put("id", nextAutoIncrement);
-
-            mDb.update("count_table", values, "song = ? AND artist = ? AND album = ?", new String[]{title_name, artist_name, album_name});
-
-        } else if (count == 0) {
-            values.put("song", title_name);
-            values.put("artist", artist_name);
-            values.put("album", album_name);
-            values.put("album_art_path", albumArtPath);
-            values.put("count", 1);
-            mDb.insert("count_table", null, values);
-        }
-
+    //停止
+    private void stopSong() {
+        if (mediaPlayer == null) return;
+        mediaPlayer.stop();
+        mediaPlayer.reset();
+        mediaPlayer.release();
+        mediaPlayer = null;
+        playingNow = false;
     }
-
-
 
 
     private final MusicPlayerAIDL.Stub MusicPlayerAIDLBinder = new MusicPlayerAIDL.Stub() {
 
-
+        //throws RemoteException
+        //削ったけど大丈夫か
         @Override
-        public String getAlbumArt() throws RemoteException {
+        public void playOrPauseSong() {
 
-            return albumArtPath;
-        }
-
-        @Override
-        public void playOrPauseSong() throws RemoteException {
-            String PLAYORPAUSE = "";
             if (mediaPlayer.isPlaying()) {
                 mediaPlayer.pause();
-                PLAYORPAUSE = "PAUSE";
                 playingNow = false;
 
             } else {
                 mediaPlayer.start();
-                PLAYORPAUSE = "PLAY";
                 playingNow = true;
             }
 
         }
 
-        @Override
-        public String playNow() throws RemoteException {
-            String playNow;
-            if (mediaPlayer.isPlaying()) {
-                playNow = "PLAY";
-            } else {
-                playNow = "PAUSE";
-            }
-
-            return playNow;
-
-        }
-        @Override
-        public void stopSong() throws RemoteException {
-            if (mediaPlayer == null) return;
-            mediaPlayer.stop();
-            mediaPlayer.reset();
-            mediaPlayer.release();;
-            mediaPlayer = null;
-            playingNow = false;
-        }
 
         @Override
-        public void skipNext() throws RemoteException {
+        public void skipNext() {
             stopSong();
-            playAlbum();
+            playPlayList();
         }
 
         @Override
-        public void skipBack() throws RemoteException {
+        public void skipBack()  {
             stopSong();
             next_track_number = next_track_number - 2;
-            playAlbum();
-        }
-
-        @Override
-        public ArrayList<String> getNowSongData() throws RemoteException {
-            ArrayList<String> song = new ArrayList<>();
-            song.add(artist_name);
-            song.add(album_name);
-            song.add(title_name);
-
-            return song;
+            playPlayList();
         }
 
 
 
         @Override
-        public void setSelectSong(String path) throws  RemoteException {
-            try {
-                if (mediaPlayer == null || !mediaPlayer.isPlaying()) {
-                    mediaPlayer = new MediaPlayer();
-                    mediaPlayer.setDataSource(path);
-                    mediaPlayer.prepare();
-                    mediaPlayer.start();
-                    folderPath = path;
-                } else {
-                    stopSong();
-                }
-            } catch (Exception e) {
-
-            }
-        }
-
-        @Override
-        public void setAlbum(List<String> makedAlbum, String getedAlbumArtPath) throws RemoteException {
-            albumArtPath = getedAlbumArtPath;
-            album = makedAlbum;
+        public void setPlayList(List<String> playList, String albumArtPath){
+            MusicPlayerService.albumArtPath = albumArtPath;
+            MusicPlayerService.this.playList = playList;
             next_track_number = 0;
-            try {
-                stopSong();
-                playAlbum();
-            }catch (Exception e) {
 
-            }
-        }
-        @Override
-        public void setRepert() throws RemoteException {
-            if (REPERT == true) {
-                REPERT = false;
-            }else {
-                REPERT = true;
-            }
+            stopSong();
+            playPlayList();
         }
 
         @Override
-        public void setSeek(int progress) throws RemoteException {
+        public void setRepeat() {
+            REPEAT = !REPEAT;
+        }
+
+        @Override
+        public void setSeek(int progress){
             mediaPlayer.seekTo(progress);
         }
-        @Override
-        public int getTotalTime() throws RemoteException {
-            int totalTime = mediaPlayer.getDuration();
-            return totalTime;
-        }
 
-        @Override
-        public int getCurrentPosition()throws RemoteException {
-            int currentPosition = mediaPlayer.getCurrentPosition();
-            return currentPosition;
-        }
     };
 
 

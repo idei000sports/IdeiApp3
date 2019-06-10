@@ -7,21 +7,20 @@ import android.content.ServiceConnection;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 
+import java.util.Objects;
+
 import takuma.idei.ideiapp.databinding.FragmentBottomplayerBinding;
 
 public class BottomPlayer extends Fragment implements View.OnClickListener{
-    private LinearLayout bottomPlayerBg;
-    //DataBinding
-    private FragmentBottomplayerBinding binding;
     //ServiceへのBinder
     private MusicPlayerAIDL binder;
-    private Intent serviceIntent;
     private ServiceConnection connection = new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName name, IBinder service) {
@@ -37,14 +36,15 @@ public class BottomPlayer extends Fragment implements View.OnClickListener{
     public void onCreate(Bundle bundle) {
         super.onCreate(bundle);
         //Serviceへ繋ぐ
-        serviceIntent = new Intent(getActivity(), MusicPlayerService.class);
-        getActivity().startService(serviceIntent);
+        Intent serviceIntent = new Intent(getActivity(), MusicPlayerService.class);
+        Objects.requireNonNull(getActivity()).startService(serviceIntent);
         getActivity().bindService(serviceIntent, connection, Context.BIND_AUTO_CREATE);
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        binding = DataBindingUtil.inflate(inflater, R.layout.fragment_bottomplayer,container, false);
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        //DataBinding
+        FragmentBottomplayerBinding binding = DataBindingUtil.inflate(inflater, R.layout.fragment_bottomplayer, container, false);
         View rootView = binding.getRoot();
         //DataBinding用
         binding.setSongData(new SongData());
@@ -52,7 +52,7 @@ public class BottomPlayer extends Fragment implements View.OnClickListener{
         //ボタン類
         rootView.findViewById(R.id.bottom_player_play).setOnClickListener(this);
         rootView.findViewById(R.id.bottom_player_up).setOnClickListener(this);
-        bottomPlayerBg = rootView.findViewById(R.id.bottom_player_bg);
+        LinearLayout bottomPlayerBg = rootView.findViewById(R.id.bottom_player_bg);
         bottomPlayerBg.setClickable(true);
         bottomPlayerBg.setOnClickListener(this);
 
@@ -70,12 +70,12 @@ public class BottomPlayer extends Fragment implements View.OnClickListener{
                     case R.id.bottom_player_up:
                     case R.id.bottom_player_bg:
                         //プレーヤー（大）起動
-                        Intent i = new Intent(getActivity(),MusicPlayerActivity.class);
-                        startActivity(i);
+                        Intent intent = new Intent(getActivity(),MusicPlayerActivity.class);
+                        startActivity(intent);
                         break;
                 }
             }catch (Exception e) {
-
+                e.printStackTrace();
             }
         }
     }

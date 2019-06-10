@@ -9,6 +9,8 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
+import java.util.Objects;
+
 public class Dashboard extends Fragment implements View.OnClickListener{
     private EditText editText;
     private ImageButton button;
@@ -50,7 +52,7 @@ public class Dashboard extends Fragment implements View.OnClickListener{
                 double B = E / 4 * 3 * 2;
 
 
-                TextView textView = getView().findViewById(R.id.textView);
+                TextView textView = Objects.requireNonNull(getView()).findViewById(R.id.textView);
                 textView.setText(
                         "\nC = " + C + "hz" +
                                 "\nD = " + D + "hz" + "\nE = " + E + "hz" + "\nF = " + F + "hz" +

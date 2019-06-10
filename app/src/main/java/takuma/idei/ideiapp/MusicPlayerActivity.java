@@ -16,12 +16,7 @@ import takuma.idei.ideiapp.databinding.FragmentMusicplayerBinding;
 //プレーヤーの表示部分
 public class MusicPlayerActivity extends AppCompatActivity implements View.OnClickListener {
     public static SeekBar positionBar;
-    //サービスへのアクセス
-    private Intent serviceIntent;
     private MusicPlayerAIDL binder;
-    //DataBinding用
-    private FragmentMusicplayerBinding binding;
-
     private ServiceConnection connection = new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName name, IBinder service) {
@@ -37,10 +32,12 @@ public class MusicPlayerActivity extends AppCompatActivity implements View.OnCli
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         //DataBinding用
-        binding = DataBindingUtil.setContentView(this, R.layout.fragment_musicplayer);
+        //DataBinding用
+        FragmentMusicplayerBinding binding = DataBindingUtil.setContentView(this, R.layout.fragment_musicplayer);
         binding.setSongData(new SongData());
         //サービス開き
-        serviceIntent = new Intent(this, MusicPlayerService.class);
+        //サービスへのアクセス
+        Intent serviceIntent = new Intent(this, MusicPlayerService.class);
         startService(serviceIntent);
         bindService(serviceIntent, connection, BIND_AUTO_CREATE);
 
@@ -55,7 +52,7 @@ public class MusicPlayerActivity extends AppCompatActivity implements View.OnCli
         findViewById(R.id.FinishActivity).setOnClickListener(this);
         findViewById(R.id.Repeat).setOnClickListener(this);
 
-        positionBar = (SeekBar)findViewById(R.id.positionBar);
+        positionBar = findViewById(R.id.positionBar);
         positionBar.setOnSeekBarChangeListener(
                 new SeekBar.OnSeekBarChangeListener() {
                     @Override
@@ -65,7 +62,7 @@ public class MusicPlayerActivity extends AppCompatActivity implements View.OnCli
                                 //サービスのプレーヤーの再生位置変更
                                 binder.setSeek(progress);
                             } catch (Exception e) {
-
+                                e.printStackTrace();
                             }
                             positionBar.setProgress(progress);
 
@@ -99,7 +96,7 @@ public class MusicPlayerActivity extends AppCompatActivity implements View.OnCli
                         binder.skipBack();
                         break;
                     case R.id.Repeat:
-                        binder.setRepert();
+                        binder.setRepeat();
                         Toast.makeText(getApplicationContext(), "リピートをONにしました", Toast.LENGTH_SHORT).show();
                         break;
                     case R.id.FinishActivity:
@@ -107,7 +104,7 @@ public class MusicPlayerActivity extends AppCompatActivity implements View.OnCli
                         break;
                 }
             }catch (Exception e) {
-
+                e.printStackTrace();
             }
         }
     }
