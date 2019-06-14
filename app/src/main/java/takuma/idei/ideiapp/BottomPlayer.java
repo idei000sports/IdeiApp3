@@ -20,6 +20,7 @@ import takuma.idei.ideiapp.databinding.FragmentBottomplayerBinding;
 
 public class BottomPlayer extends Fragment implements View.OnClickListener{
     //ServiceへのBinder
+
     private MusicPlayerAIDL binder;
     private ServiceConnection connection = new ServiceConnection() {
         @Override

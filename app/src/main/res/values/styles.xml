@@ -1,4 +1,4 @@
-<resources>
+<resources xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <!-- Base application theme. -->
     <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
@@ -8,5 +8,46 @@
         <item name="colorAccent">@color/colorAccent</item>
         <item name="windowNoTitle">true</item>
     </style>
+
+    <style name="HomeListTextViewTitle">
+        <item name="android:textColor">#FFFFFF</item>
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">0dp</item>
+        <item name="android:layout_weight">1</item>
+        <item name="android:fontFamily">sans-serif-black</item>
+        <item name="android:text">@string/home_list_title</item>
+        <item name="android:textAlignment">center</item>
+        <item name="android:textSize">18sp</item>
+    </style>
+
+    <style name="HomeListTextViewInfo">
+        <item name="android:textColor">#FFFFFF</item>
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">0dp</item>
+        <item name="android:layout_weight">1</item>
+        <item name="android:text">@string/home_list_title_info</item>
+        <item name="android:textAlignment">center</item>
+        <item name="android:fontFamily">sans-serif-black</item>
+    </style>
+
+    <style name="HomeListText">
+        <item name="android:textColor">#FFFFFF</item>
+        <item name="android:layout_width">120dp</item>
+        <item name="android:layout_height">0dp</item>
+        <item name="android:layout_weight">1</item>
+        <item name="android:layout_gravity">center</item>
+        <item name="android:fontFamily">sans-serif-black</item>
+        <item name="android:text">@string/home_list_artist</item>
+        <item name="android:textAlignment">center</item>
+    </style>
+
+    <style name="HomeListImg">
+        <item name="android:text">aiaiaiai</item>
+        <item name="android:layout_height">0dp</item>
+        <item name="android:layout_width">180dp</item>
+        <item name="android:scaleType">fitCenter</item>
+        <item name="android:layout_weight">3</item>
+    </style>
+
 
 </resources>

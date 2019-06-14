@@ -34,7 +34,7 @@ public class MainActivity extends AppCompatActivity {
                     fragment = new Home();
                     break;
                 case R.id.navigation_dashboard:
-                    fragment = new Dashboard();
+                    fragment = new Search();
                     break;
                 case R.id.navigation_selectFolder:
                     fragment = new SelectFolder();

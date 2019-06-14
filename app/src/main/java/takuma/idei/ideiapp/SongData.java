@@ -16,6 +16,7 @@ public class SongData extends BaseObservable {
     private String title;
     private static boolean playingNow;
     private int playOrPause;
+    private String bottomPlayerSong;
 
     //private static ImageView albumArtView;
     private Bitmap albumArt;
@@ -38,6 +39,10 @@ public class SongData extends BaseObservable {
                 setAlbumArt(BitmapFactory.decodeFile(MusicPlayerService.albumArtPath));
                 setTotalTime(MusicPlayerService.totalTime);
                 currentPosition = MusicPlayerService.mediaPlayer.getCurrentPosition();
+
+                if(getTitle() != null) {
+                    setBottomPlayerSong(getTitle() + " - " + getArtist());
+                }
 
 
                 if (getPlayingNow()) {
@@ -86,13 +91,13 @@ public class SongData extends BaseObservable {
         return timeLabel;
     }
 
-    @BindingAdapter("app:srcCompat")
-    public static void albumArter(ImageView albumArtView, Bitmap albumArt) {
+    @BindingAdapter("albumArt")
+    public static void albumArt(ImageView albumArtView, Bitmap albumArt) {
         albumArtView.setImageBitmap(albumArt);
     }
 
-    @BindingAdapter("app:srcCompat")
-    public static void srcCompat(ImageButton button, int playOrPause) {
+    @BindingAdapter("playOrPause")
+    public static void playOrpause(ImageButton button, int playOrPause) {
         button.setImageResource(playOrPause);
     }
 
@@ -200,5 +205,14 @@ public class SongData extends BaseObservable {
     public void setProgress(int progress) {
         this.progress = progress;
         notifyPropertyChanged(takuma.idei.ideiapp.BR.progress);
+    }
+    @Bindable
+    public String getBottomPlayerSong() {
+        return bottomPlayerSong;
+    }
+
+    public void setBottomPlayerSong(String bottomPlayerSong) {
+        this.bottomPlayerSong = bottomPlayerSong;
+        notifyPropertyChanged(takuma.idei.ideiapp.BR.bottomPlayerSong);
     }
 }

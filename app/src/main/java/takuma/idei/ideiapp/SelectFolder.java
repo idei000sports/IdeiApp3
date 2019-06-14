@@ -3,16 +3,18 @@ package takuma.idei.ideiapp;
 import android.content.ComponentName;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.IBinder;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
-import android.widget.ListView;
 import android.widget.TextView;
 
 import java.io.File;
@@ -62,12 +64,11 @@ public class SelectFolder extends Fragment implements View.OnClickListener{
         String musicFolderPath = storagePath + "/Music";
 
         folderPathTextView = rootView.findViewById(R.id.folderPath);
-        folderPathTextView.setText(musicFolderPath);
-
         makeFolderList(musicFolderPath, rootView);
 
         return rootView;
     }
+
     public void makeFolderList(String musicFolderPath, View rootView){
         songAndFolderList = new ArrayList<>();
         //現在のフォルダーを表示
@@ -76,52 +77,66 @@ public class SelectFolder extends Fragment implements View.OnClickListener{
         //フォルダーのファイルをリスト化
         //fileListからmp3とフォルダを抽出したのがsongAndFolderList
         File[] fileList = new File(musicFolderPath).listFiles();
+        ArrayList<SampleListItem> listItems = new ArrayList<>();
 
         //ファイルが入っていれば
         if(fileList != null){
             for (File file : fileList) {
                 if (file.isFile() && file.getName().endsWith(".mp3") || file.isDirectory()) {
                     //mp3ファイルorフォルダーなら
+                    Bitmap bmp = BitmapFactory.decodeResource(getResources(), R.mipmap.ic_launcher);
                     songAndFolderList.add(file.getName());
+                    if(file.isDirectory()) {
+                        bmp = BitmapFactory.decodeFile(musicFolderPath + "/" + file.getName() + "/folder.jpg");
+                    } else if (file.getName().endsWith(".mp3")){
+                        bmp = BitmapFactory.decodeFile(musicFolderPath + "/folder.jpg");
+                    }
+
+                    //Bitmap bmp = BitmapFactory.decodeResource(getResources(), R.mipmap.ic_launcher);
+                    SampleListItem item = new SampleListItem(bmp, file.getName());
+                    listItems.add(item);
+
+
                 }
 
             }
 
-            ListView listView = rootView.findViewById(R.id.songlist);
-            ArrayAdapter<String> adapter = new ArrayAdapter<>(Objects.requireNonNull(getContext()), android.R.layout.simple_expandable_list_item_1, songAndFolderList);
-            listView.setAdapter(adapter);
-
-            listView.setOnItemClickListener((parent, view, position, id) -> {
-                ListView listView1 = (ListView) parent;
-                String item = (String) listView1.getItemAtPosition(position);
-                if(item.endsWith(".mp3")) {
-                    //mp3だった場合
-                    int trackNumber = songAndFolderList.indexOf(item);
-                    playList = new ArrayList<>();
-                    //選択したファイルのtrackNumber以降のファイルをプレイリスト化
-                    for (int i = trackNumber; i < songAndFolderList.size(); i++) {
-                        if(songAndFolderList.get(i).endsWith(".mp3")) {
-                            playList.add(musicFolderPath + "/" + songAndFolderList.get(i));
+            //ここからリストビューをRecyclerViewに変更
+            RecyclerView recyclerView = rootView.findViewById(R.id.songList);
+            FolderRecycleViewAdapter adapter = new FolderRecycleViewAdapter(listItems) {
+                @Override
+                protected void onItemClicked(@NonNull String item) {
+                    if (item.endsWith(".mp3")) {
+                        //mp3だった場合
+                        int trackNumber = songAndFolderList.indexOf(item);
+                        playList = new ArrayList<>();
+                        //選択したファイルのtrackNumber以降のファイルをプレイリスト化
+                        for (int i = trackNumber; i < songAndFolderList.size(); i++) {
+                            if (songAndFolderList.get(i).endsWith(".mp3")) {
+                                playList.add(musicFolderPath + "/" + songAndFolderList.get(i));
+                            }
                         }
-                    }
 
-                    try {
-                        String albumArtPath = musicFolderPath + "/" + "folder.jpg";
-                        binder.setPlayList(playList, albumArtPath);
-                    }catch (Exception e) {
-                        e.printStackTrace();
+                        try {
+                            String albumArtPath = musicFolderPath + "/" + "folder.jpg";
+                            binder.setPlayList(playList, albumArtPath);
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    } else {
+                        //ディレクトリ名を足してフォルダーを開き直す
+                        songAndFolderList.clear();
+                        SelectFolder.this.makeFolderList(musicFolderPath + "/" + item, rootView);
                     }
-                } else {
-                    //ディレクトリ名を足してフォルダーを開き直す
-                    songAndFolderList.clear();
-                    makeFolderList(musicFolderPath + "/" + item, rootView);
                 }
-            });
+
+            };
+            recyclerView.setHasFixedSize(true);
+            LinearLayoutManager llm = new LinearLayoutManager(getContext());
+            recyclerView.setLayoutManager(llm);
+            recyclerView.setAdapter(adapter);
         }
-
-
     }
-
 
     @Override
     public void onClick (View v){

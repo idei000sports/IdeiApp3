@@ -5,6 +5,7 @@
     android:id="@+id/container"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="#191414"
     android:orientation="vertical"
     tools:context=".MainActivity">
 
@@ -45,7 +46,11 @@
             android:layout_marginStart="0dp"
             android:layout_marginEnd="0dp"
             android:layout_weight="0.5"
-            android:background="?android:attr/windowBackground"
+            android:background="#191414"
+
+            app:itemIconTint="@color/buttom_navigation"
+            app:itemTextColor="@color/buttom_navigation"
+
             app:menu="@menu/bottom_nav_menu" />
     </LinearLayout>
 </LinearLayout>

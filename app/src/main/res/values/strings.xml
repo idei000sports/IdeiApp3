@@ -4,5 +4,10 @@
     <string name="title_dashboard">Dashboard</string>
     <string name="title_notifications">Notifications</string>
     <string name="title_selectfolder">SelectFolder</string>
+    <string name="title_search">Search</string>
     <string name="todo">TODO</string>
+
+    <string name="home_list_artist">アーティスト名がここに挿入されます。</string>
+    <string name="home_list_title">プレイリストのタイトル</string>
+    <string name="home_list_title_info">プレイリストの説明</string>
 </resources>

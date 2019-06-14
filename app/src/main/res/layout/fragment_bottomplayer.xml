@@ -15,7 +15,7 @@
 
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="?android:attr/windowBackground"
+    android:background="#191414"
     android:orientation="vertical">
 
 
@@ -25,8 +25,10 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_weight="1"
+        android:backgroundTint="#191414"
         android:max="@{SongData.totalTime}"
-        android:progress="@{SongData.progress}" />
+        android:progress="@{SongData.progress}"
+        android:progressTint="#FFFFFF" />
 
     <LinearLayout
         android:id="@+id/bottom_player_bg"
@@ -45,50 +47,52 @@
             android:id="@+id/bottom_player_up"
             android:layout_width="0dp"
             android:layout_height="match_parent"
-            android:gravity="center"
             android:layout_weight="0.3"
             android:background="@null"
+            android:gravity="center"
             android:scaleType="centerInside"
             android:textAlignment="center"
+            android:tint="#FFEBEE"
             app:srcCompat="@drawable/uparrow" />
+
+        <Space
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.3" />
 
         <TextView
             android:id="@+id/bottom_song"
             android:layout_width="0dp"
             android:layout_height="match_parent"
+            android:layout_weight="2"
+            android:ellipsize="marquee"
+            android:focusable="true"
+            android:focusableInTouchMode="true"
             android:gravity="center"
-            android:layout_weight="1.5"
-            android:text="@{SongData.title}"
-            android:textAlignment="center" />
+            android:marqueeRepeatLimit="marquee_forever"
+            android:scrollHorizontally="true"
+            android:singleLine="true"
+            android:text="@{SongData.bottomPlayerSong}"
+            android:textAlignment="center"
+            android:textColor="#FFFFFF" />
 
-        <TextView
-            android:id="@+id/hyphen"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:gravity="center"
-            android:layout_weight="0.3"
-            android:text="-"
-            android:textAlignment="center" />
 
-        <TextView
-            android:id="@+id/artist"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:gravity="center"
-            android:layout_weight="1.5"
-            android:text="@{SongData.artist}"
-            android:textAlignment="center" />
+        <Space
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.3" />
 
         <ImageButton
             android:id="@+id/bottom_player_play"
             android:layout_width="0dp"
             android:layout_height="match_parent"
-            android:gravity="center"
             android:layout_weight="0.3"
             android:background="@null"
+            android:gravity="center"
             android:scaleType="centerInside"
             android:textAlignment="center"
-            app:srcCompat="@{SongData.playOrPause}"/>
+            android:tint="#FFEBEE"
+            app:playOrPause="@{SongData.playOrPause}" />
 
 
         <Space

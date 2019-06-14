@@ -20,9 +20,9 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:layout_weight="1"
-    android:background="#FFFFFF"
     android:orientation="vertical"
-    android:padding="32dp">
+    android:padding="32dp"
+    android:background="@drawable/gradient2">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -38,6 +38,7 @@
             android:layout_weight="1"
             android:background="@null"
             android:scaleType="centerInside"
+            android:tint="#FFEBEE"
             app:srcCompat="@drawable/downarrow" />
 
         <LinearLayout
@@ -52,12 +53,14 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
+                android:textColor="#FFFFFF"
                 android:text="アーティストページから再生中" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
+                android:textColor="#FFFFFF"
                 android:text="@{SongData.album}" />
         </LinearLayout>
 
@@ -92,7 +95,7 @@
                 android:layout_height="match_parent"
                 android:layout_gravity="center"
                 android:layout_weight="5"
-                app:srcCompat="@{SongData.albumArt}" />
+                app:albumArt="@{SongData.albumArt}" />
 
             <Space
                 android:layout_width="wrap_content"
@@ -125,12 +128,14 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
+                android:textColor="#FFFFFF"
                 android:text="@{SongData.title}" />
 
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
+                android:textColor="#FFFFFF"
                 android:text="@{SongData.artist}" />
         </LinearLayout>
 
@@ -147,8 +152,13 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"
+            android:backgroundTint="#00FFFFFF"
+            android:backgroundTintMode="screen"
+            android:max="@{SongData.totalTime}"
             android:progress="@{SongData.progress}"
-            android:max="@{SongData.totalTime}" />
+            android:progressBackgroundTint="#B4B4B4"
+            android:progressTint="#FFFFFF"
+            android:thumbTint="#FFFFFF" />
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -161,6 +171,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
+                android:textColor="#FFFFFF"
                 android:text="@{SongData.elapsedTimeLabel}"
                  />
 
@@ -169,6 +180,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
+                android:textColor="#FFFFFF"
                 android:text="@{SongData.remainingTimeLabel}"
                 android:textAlignment="textEnd" />
         </LinearLayout>
@@ -187,6 +199,7 @@
             android:layout_weight="1"
             android:background="@null"
             android:scaleType="centerInside"
+            android:tint="#FFEBEE"
             app:srcCompat="@drawable/back" />
 
         <ImageButton
@@ -196,7 +209,8 @@
             android:layout_weight="1"
             android:background="@null"
             android:scaleType="centerInside"
-            app:srcCompat="@{SongData.playOrPause}" />
+            android:tint="#FFEBEE"
+            app:playOrPause="@{SongData.playOrPause}" />
 
         <ImageButton
             android:id="@+id/SkipNextButton"
@@ -205,6 +219,7 @@
             android:layout_weight="1"
             android:background="@null"
             android:scaleType="centerInside"
+            android:tint="#FFEBEE"
             app:srcCompat="@drawable/next1" />
 
         <ImageButton
@@ -214,6 +229,7 @@
             android:layout_weight="1"
             android:scaleType="centerInside"
             android:background="@null"
+            android:tint="#FFEBEE"
             app:srcCompat="@drawable/replay" />
     </LinearLayout>
 
