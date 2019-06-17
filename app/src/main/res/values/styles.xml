@@ -41,12 +41,13 @@
         <item name="android:textAlignment">center</item>
     </style>
 
-    <style name="HomeListImg">
+    <style name="HomeListImgBtn">
         <item name="android:text">aiaiaiai</item>
         <item name="android:layout_height">0dp</item>
         <item name="android:layout_width">180dp</item>
         <item name="android:scaleType">fitCenter</item>
         <item name="android:layout_weight">3</item>
+        <item name="android:background">@null</item>
     </style>
 
 

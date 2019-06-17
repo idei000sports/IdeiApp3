@@ -7,8 +7,11 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Handler;
 import android.os.Message;
+import android.util.Log;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+
+import static android.content.ContentValues.TAG;
 
 public class SongData extends BaseObservable {
     private String artist;
@@ -36,9 +39,19 @@ public class SongData extends BaseObservable {
                 setTitle(MusicPlayerService.title_name);
                 setArtist(MusicPlayerService.artist_name);
                 setPlayingNow(MusicPlayerService.playingNow);
-                setAlbumArt(BitmapFactory.decodeFile(MusicPlayerService.albumArtPath));
+
+                if(MusicPlayerService.albumArtPath != null) {
+                    setAlbumArt(BitmapFactory.decodeFile(MusicPlayerService.albumArtPath));
+                }
+
+
                 setTotalTime(MusicPlayerService.totalTime);
-                currentPosition = MusicPlayerService.mediaPlayer.getCurrentPosition();
+
+                try {
+                    currentPosition = MusicPlayerService.mediaPlayer.getCurrentPosition();
+                }catch (Exception e) {
+
+                }
 
                 if(getTitle() != null) {
                     setBottomPlayerSong(getTitle() + " - " + getArtist());
@@ -57,9 +70,9 @@ public class SongData extends BaseObservable {
 
                 Thread.sleep(1000);
             } catch (InterruptedException e) {
-                e.printStackTrace();
+                Log.e(TAG, "SongData: interrr" );
             } catch (Exception e) {
-                e.printStackTrace();
+                Log.e(TAG, "SongData: aaaa" );
             }
         }).start();
     }

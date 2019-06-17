@@ -2,6 +2,7 @@ package takuma.idei.ideiapp;
 
 
 import android.Manifest;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
@@ -14,6 +15,8 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
+
+import java.util.Objects;
 
 public class MainActivity extends AppCompatActivity {
     private Fragment fragment;
@@ -50,6 +53,9 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Intent serviceIntent = new Intent(this, MusicPlayerService.class);
+        Objects.requireNonNull(this).startService(serviceIntent);
+
         setContentView(R.layout.activity_main);
         requestReadStorage();
 
@@ -58,6 +64,7 @@ public class MainActivity extends AppCompatActivity {
         fragment = new Home();
         bottomPlayerFragment = new BottomPlayer();
 
+        //this.bindService(serviceIntent, connection, Context.BIND_AUTO_CREATE);
 
 
         BottomNavigationView navView = findViewById(R.id.nav_view);

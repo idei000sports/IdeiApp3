@@ -92,7 +92,6 @@ public class SelectFolder extends Fragment implements View.OnClickListener{
                         bmp = BitmapFactory.decodeFile(musicFolderPath + "/folder.jpg");
                     }
 
-                    //Bitmap bmp = BitmapFactory.decodeResource(getResources(), R.mipmap.ic_launcher);
                     SampleListItem item = new SampleListItem(bmp, file.getName());
                     listItems.add(item);
 

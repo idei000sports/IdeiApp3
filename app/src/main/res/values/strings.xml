@@ -10,4 +10,5 @@
     <string name="home_list_artist">アーティスト名がここに挿入されます。</string>
     <string name="home_list_title">プレイリストのタイトル</string>
     <string name="home_list_title_info">プレイリストの説明</string>
+
 </resources>

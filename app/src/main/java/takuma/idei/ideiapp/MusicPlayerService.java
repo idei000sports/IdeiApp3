@@ -1,18 +1,13 @@
 package takuma.idei.ideiapp;
 
 import android.app.Service;
-import android.content.ContentValues;
 import android.content.Intent;
-import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
 import android.media.MediaMetadataRetriever;
 import android.media.MediaPlayer;
 import android.os.IBinder;
+import android.widget.Toast;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.List;
-import java.util.Locale;
 
 public class MusicPlayerService extends Service {
     //プレーヤー
@@ -26,6 +21,7 @@ public class MusicPlayerService extends Service {
     public static String album_name;
     public static String title_name;
     public static String albumArtPath;
+    public static String songPath;
     //曲の長さ
     public static int totalTime;
     //現在の再生位置
@@ -36,6 +32,7 @@ public class MusicPlayerService extends Service {
     private boolean REPEAT = false;
 
 
+
     @Override
     public void onCreate() {
         super.onCreate();
@@ -44,89 +41,22 @@ public class MusicPlayerService extends Service {
     }
     //メイン、作ったプレイリストを再生
     private void playPlayList() {
-        String songPath = playList.get(next_track_number);
+        songPath = playList.get(next_track_number);
         next_track_number += 1;
-        makeSongData(songPath);
 
         playSong(songPath);
 
         //再生が終わったとき
         mediaPlayer.setOnCompletionListener(mp -> {
-            makeHistory();
-            makeHistoryDate();
+            MakeHistory makeHistory = new MakeHistory();
+            makeHistory.makeCountTable(getApplicationContext(), title_name, artist_name, album_name, albumArtPath, songPath);
+            makeHistory.makeCountDataTable(getApplicationContext(), artist_name, album_name, albumArtPath, songPath);
+
             stopSong();
             if(REPEAT) next_track_number -= 1;
             playPlayList();
         });
     }
-    //履歴の作成
-    private void makeHistory() {
-        int count = 0;
-        PlayDataBase playDataBase = new PlayDataBase(getApplicationContext());
-        SQLiteDatabase sqLiteDatabase = playDataBase.getWritableDatabase();
-        ContentValues values = new ContentValues();
-        Cursor cursor = null;
-        try {
-            String sql = "SELECT count FROM count_table WHERE song = '" + title_name + "' AND artist = '" + artist_name + "';";
-            cursor = sqLiteDatabase.rawQuery(sql, null);
-
-            //再生回数が記録されているかチェック、なければcountは0のまま
-            if (cursor.moveToFirst()) {
-                count = cursor.getInt(cursor.getColumnIndex("count"));
-            }
-
-            if (count > 0) {
-                count += 1;
-                int nextAutoIncrement = 0;
-                sql = "SELECT MAX(id) FROM count_table;";
-                cursor = sqLiteDatabase.rawQuery(sql, null);
-                if(cursor.moveToNext()) {
-                    nextAutoIncrement = cursor.getInt(cursor.getColumnIndex("MAX(id)")) + 1;
-                }
-
-                values.put("count", count);
-                values.put("id", nextAutoIncrement);
-
-                sqLiteDatabase.update("count_table", values, "song = ? AND artist = ? AND album = ?", new String[]{title_name, artist_name, album_name});
-
-            } else if (count == 0){
-                values.put("song", title_name);
-                values.put("artist", artist_name);
-                values.put("album", album_name);
-                values.put("album_art_path", albumArtPath);
-                values.put("count", 1);
-                sqLiteDatabase.insert("count_table", null, values);
-            }
-        }  catch (Exception e) {
-            e.printStackTrace();
-        } finally {
-            if (cursor != null) cursor.close();
-        }
-
-    }
-
-    private void makeHistoryDate() {
-        PlayDataBase playDataBase = new PlayDataBase(getApplicationContext());
-        SQLiteDatabase sqLiteDatabase = playDataBase.getWritableDatabase();
-        ContentValues values = new ContentValues();
-        try {
-            values.put("artist", artist_name);
-            values.put("album", album_name);
-            values.put("album_art_path", albumArtPath);
-            values.put("date", getDateTime());
-            sqLiteDatabase.insert("count_and_date_table", null, values);
-        }  catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-    private String getDateTime() {
-        SimpleDateFormat dateFormat = new SimpleDateFormat(
-                "yyyy-MM-dd HH:mm:ss", Locale.getDefault());
-        Date date = new Date();
-        return dateFormat.format(date);
-    }
-
-
     //タグ情報をstaticフィールドに
     private void makeSongData(String songPath) {
         MediaMetadataRetriever mediaMetadataRetriever = new MediaMetadataRetriever();
@@ -141,6 +71,7 @@ public class MusicPlayerService extends Service {
     }
     //再生
     private void playSong(String songPath) {
+        makeSongData(songPath);
         try {
             mediaPlayer = new MediaPlayer();
             mediaPlayer.setDataSource(songPath);
@@ -149,9 +80,13 @@ public class MusicPlayerService extends Service {
             totalTime = mediaPlayer.getDuration();
             currentPosition = mediaPlayer.getCurrentPosition();
             playingNow = true;
+
+            //Toast.makeText(this, songPath, Toast.LENGTH_SHORT).show();
+
         }catch (Exception e) {
             e.printStackTrace();
         }
+
     }
     //停止
     private void stopSong() {
@@ -180,6 +115,11 @@ public class MusicPlayerService extends Service {
                 playingNow = true;
             }
 
+        }
+        @Override
+        public void playSongFromTop(String songPath) {
+            Toast.makeText(getApplicationContext(), songPath, Toast.LENGTH_SHORT).show();
+            playSong(songPath);
         }
 
 

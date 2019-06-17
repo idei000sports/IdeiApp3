@@ -25,9 +25,9 @@
                 android:layout_height="match_parent"
                 android:orientation="vertical">
 
-                <ImageView
+                <ImageButton
                     android:id="@+id/list_img1"
-                    style="@style/HomeListImg"
+                    style="@style/HomeListImgBtn"
                     app:srcCompat="@drawable/loveapple" />
 
                 <TextView
@@ -40,9 +40,9 @@
                 android:layout_height="match_parent"
                 android:orientation="vertical">
 
-                <ImageView
+                <ImageButton
                     android:id="@+id/list_img2"
-                    style="@style/HomeListImg"
+                    style="@style/HomeListImgBtn"
                     app:srcCompat="@drawable/loveapple" />
 
                 <TextView
@@ -55,9 +55,9 @@
                 android:layout_height="match_parent"
                 android:orientation="vertical">
 
-                <ImageView
+                <ImageButton
                     android:id="@+id/list_img3"
-                    style="@style/HomeListImg"
+                    style="@style/HomeListImgBtn"
                     app:srcCompat="@drawable/loveapple" />
 
                 <TextView
@@ -70,9 +70,9 @@
                 android:layout_height="match_parent"
                 android:orientation="vertical">
 
-                <ImageView
+                <ImageButton
                     android:id="@+id/list_img4"
-                    style="@style/HomeListImg"
+                    style="@style/HomeListImgBtn"
                     app:srcCompat="@drawable/loveapple" />
 
                 <TextView
@@ -85,9 +85,9 @@
                 android:layout_height="match_parent"
                 android:orientation="vertical">
 
-                <ImageView
+                <ImageButton
                     android:id="@+id/list_img5"
-                    style="@style/HomeListImg"
+                    style="@style/HomeListImgBtn"
                     app:srcCompat="@drawable/loveapple" />
 
                 <TextView
@@ -100,9 +100,9 @@
                 android:layout_height="match_parent"
                 android:orientation="vertical">
 
-                <ImageView
+                <ImageButton
                     android:id="@+id/list_img6"
-                    style="@style/HomeListImg"
+                    style="@style/HomeListImgBtn"
                     app:srcCompat="@drawable/loveapple" />
 
                 <TextView

@@ -1,72 +1,114 @@
 package takuma.idei.ideiapp;
 
+import android.content.ComponentName;
+import android.content.Context;
+import android.content.Intent;
+import android.content.ServiceConnection;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
+import android.widget.ImageButton;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Locale;
+import java.util.Objects;
 
-public class Home extends Fragment {
-
-    private TextView[] recentlyViewTextList = new TextView[6];
-    private ImageView[] recentlyViewImageList = new ImageView[6];
-    private TextView[] thisMonthFavViewTextList = new TextView[6];
-    private ImageView[] thisMonthFavViewImageList = new ImageView[6];
-    private TextView[] playbackViewTextList = new TextView[6];
-    private ImageView[] playbackViewImageList = new ImageView[6];
-    private TextView[] myFavoriteViewTextList = new TextView[6];
-    private ImageView[] myFavoriteViewImageList = new ImageView[6];
-
-
+public class Home extends Fragment implements View.OnClickListener{
+    private SQLiteDatabase sqLiteDatabase;
     private SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
     private String today = dateFormat.format(new Date());
-    private SQLiteDatabase sqLiteDatabase;
+
+    private HashMap<Integer, ArrayList<HomeListMaker>> homeListMakerHashMap = new HashMap<Integer, ArrayList<HomeListMaker>>();
+
+    private MusicPlayerAIDL binder;
+    private ServiceConnection connection = new ServiceConnection() {
+        @Override
+        public void onServiceConnected(ComponentName name, IBinder service) {
+            binder = MusicPlayerAIDL.Stub.asInterface(service);
+        }
+        @Override
+        public void onServiceDisconnected(ComponentName name) {
+            binder = null;
+        }
+    };
+    private Object Tag;
+
     @Override
     public void onCreate(Bundle bundle){
         super.onCreate(bundle);
 
         PlayDataBase playDataBase = new PlayDataBase(getActivity());
         sqLiteDatabase = playDataBase.getWritableDatabase();
+
+        Intent serviceIntent = new Intent(getActivity(), MusicPlayerService.class);
+        Objects.requireNonNull(getActivity()).startService(serviceIntent);
+        getActivity().bindService(serviceIntent, connection, Context.BIND_AUTO_CREATE);
     }
 
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        final View rootView = inflater.inflate(R.layout.fragment_home_tester, container, false);
+        final View rootView = inflater.inflate(R.layout.fragment_home, container, false);
         setAndGetViewID(rootView);
-        recentlyPlayed(rootView);
-        thisMonthPlayed(rootView);
-        playbackPlayed(rootView);
-        myFavoritePlayed(rootView);
+        setAllListTitle(rootView);
+        getAllList();
 
         return rootView;
     }
+    public void getAllList() {
 
-    public String[][] getSQL(String sql, String columnName) {
-        String[][] list = new String[6][2];
+        Calendar cal1 = Calendar.getInstance();
+        cal1.add(Calendar.YEAR, -1);
+        String oneYearBefore = dateFormat.format(cal1.getTime());
+
+        Calendar cal2 = Calendar.getInstance();
+        cal2.add(Calendar.MONTH, -1);
+        String oneMonthBefore = dateFormat.format(cal2.getTime());
+
+        String GET_RECENTLY_SQL = "SELECT song, album_art_path, id, path from count_table ORDER BY id DESC;";
+        String GET_THIS_MONTH_FAV_SQL = "SELECT album, album_art_path, count(*) AS COUNT, path FROM count_and_date_table  WHERE date BETWEEN '" + oneMonthBefore + "' AND '" + today + "' GROUP BY artist, album ORDER BY COUNT DESC;";
+        String GET_PLAYBACK_LIST_SQL = "SELECT album, album_art_path, count(*) AS COUNT, path FROM count_and_date_table  WHERE date BETWEEN '" + oneYearBefore + "' AND '" + today + "' GROUP BY artist, album ORDER BY COUNT DESC;";
+        String GET_MY_FAVORITE_SQL = "SELECT album, album_art_path, count(*) AS COUNT, path FROM count_and_date_table GROUP BY artist, album ORDER BY COUNT DESC;";
+
+        getSQL(GET_RECENTLY_SQL, homeListMakerHashMap.get(R.id.recent_history), "song");
+        getSQL(GET_MY_FAVORITE_SQL, homeListMakerHashMap.get(R.id.my_favorite),"album");
+        getSQL(GET_PLAYBACK_LIST_SQL, homeListMakerHashMap.get(R.id.playback),"album");
+        getSQL(GET_THIS_MONTH_FAV_SQL, homeListMakerHashMap.get(R.id.this_month_fav),"album");
+    }
+
+
+    public void getSQL(String sql, ArrayList<HomeListMaker> list, String wantColumnName) {
+        //String[][] list = new String[6][3];
         try (Cursor cursor = sqLiteDatabase.rawQuery(sql, null)) {
             boolean next = cursor.moveToNext();
             int i = 0;
             while (next || i < 6) {
                 if (i < 6) {
-                    String album = cursor.getString(cursor.getColumnIndex(columnName));
+                    String title = cursor.getString(cursor.getColumnIndex(wantColumnName));
                     String albumArtPath = cursor.getString(cursor.getColumnIndex("album_art_path"));
+                    String songPath = cursor.getString(cursor.getColumnIndex("path"));
 
-                    list[i][0] = album;
-                    list[i][1] = albumArtPath;
+                    list.get(i).setAlbumArtAndInfo(title, albumArtPath, songPath);
+                    int finalI = i;
+                    list.get(i).getImageButton().setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            Toast.makeText(getContext(), list.get(finalI).getTitle(), Toast.LENGTH_SHORT).show();
+                            playSong(list.get(finalI).getSongPath());
+                        }
+                    });
                 }
                 i++;
                 next = cursor.moveToNext();
@@ -76,104 +118,63 @@ public class Home extends Fragment {
             e.printStackTrace();
         }
 
-        return list;
     }
-
-
-    public void myFavoritePlayed(View rootView) {
-        TextView my_favorite_list_title = (TextView)rootView.findViewById(R.id.my_favorite_title).findViewById(R.id.list_title);
-        TextView my_favorite_list_info = (TextView)rootView.findViewById(R.id.my_favorite_title).findViewById(R.id.list_info);
-        my_favorite_list_title.setText("あなたのお気に入りのアルバムと曲");
-        my_favorite_list_info.setText("");
-
-        String sql = "SELECT album, album_art_path, count(*) AS COUNT FROM count_and_date_table GROUP BY artist, album ORDER BY COUNT DESC;";
-        String[][] myFavorite = getSQL(sql, "album");
-        setViewList(myFavoriteViewImageList, myFavoriteViewTextList, myFavorite);
-    }
-
-
-
-    public void playbackPlayed(View rootView) {
-        TextView playback_list_title = (TextView)rootView.findViewById(R.id.playback_title).findViewById(R.id.list_title);
-        TextView playback_title_info = (TextView)rootView.findViewById(R.id.playback_title).findViewById(R.id.list_info);
-        playback_list_title.setText("プレイバック");
-        playback_title_info.setText("あなたが過去数ヶ月間で一番聴いた音楽");
-
-        Calendar cal1 = Calendar.getInstance();
-        cal1.add(Calendar.YEAR, -1);
-        String oneYearBefore = dateFormat.format(cal1.getTime());
-
-        String sql = "SELECT album, album_art_path, count(*) AS COUNT FROM count_and_date_table  WHERE date BETWEEN '" + oneYearBefore + "' AND '" + today + "' GROUP BY artist, album ORDER BY COUNT DESC;";
-        String[][] thisYear = getSQL(sql, "album");
-
-        setViewList(playbackViewImageList, playbackViewTextList, thisYear);
-
-    }
-
-
-    public void thisMonthPlayed(View rootView) {
-        TextView this_month_fav_list_title = (TextView)rootView.findViewById(R.id.this_month_fav_title).findViewById(R.id.list_title);
-        TextView this_month_fav_list_title_info = (TextView)rootView.findViewById(R.id.this_month_fav_title).findViewById(R.id.list_info);
-        this_month_fav_list_title.setText("最近のお気に入り");
-        this_month_fav_list_title_info.setText("あなたが今月リピートで聴いた音楽");
-
-        Calendar cal1 = Calendar.getInstance();
-        cal1.add(Calendar.MONTH, -1);
-        String oneMonthBefore = dateFormat.format(cal1.getTime());
-
-        String sql = "SELECT album, album_art_path, count(*) AS COUNT FROM count_and_date_table  WHERE date BETWEEN '" + oneMonthBefore + "' AND '" + today + "' GROUP BY artist, album ORDER BY COUNT DESC;";
-        String[][] thisMonth = getSQL(sql, "album");
-        setViewList(thisMonthFavViewImageList, thisMonthFavViewTextList, thisMonth);
-
-    }
-
-
-    public void recentlyPlayed (View rootView) {
-        TextView recent_history_title = (TextView)rootView.findViewById(R.id.recent_history_title).findViewById(R.id.list_title);
-        TextView recent_history_title_info = (TextView)rootView.findViewById(R.id.recent_history_title).findViewById(R.id.list_info);
-        recent_history_title.setText("最近再生した曲");
-        recent_history_title_info.setText("");
-
-        String sql = "SELECT song, album_art_path, id from count_table ORDER BY id DESC;";
-        String[][] recent = getSQL(sql, "song");
-        setViewList(recentlyViewImageList, recentlyViewTextList, recent);
-
-    }
-
-    private void setViewList(ImageView[] ImageViewList, TextView[] ViewList, String[][] playHistoryList) {
-        Drawable drawable;
-
-
-        for (int i = 0; i < 6; i++) {
-            Bitmap bmp = BitmapFactory.decodeFile(playHistoryList[i][1]);
-            ImageViewList[i].setImageBitmap(bmp);
-
-
-            ViewList[i].setText(playHistoryList[i][0]);
-
-
-        }
-    }
-
 
 
 
     private void setAndGetViewID (View rootView) {
+
+        int[] list_name = {R.id.recent_history, R.id.this_month_fav, R.id.playback, R.id.my_favorite}      ;
         int[] list_txts = {R.id.list_txt1, R.id.list_txt2, R.id.list_txt3, R.id.list_txt4, R.id.list_txt5, R.id.list_txt6};
         int[] list_imgs = {R.id.list_img1, R.id.list_img2, R.id.list_img3, R.id.list_img4, R.id.list_img5, R.id.list_img6};
-        for (int i = 0; i < 6; i++) {
-            recentlyViewTextList[i] = (TextView) rootView.findViewById(R.id.recent_history).findViewById(list_txts[i]);
-            recentlyViewImageList[i] = (ImageView) rootView.findViewById(R.id.recent_history).findViewById(list_imgs[i]);
 
-            thisMonthFavViewTextList[i] = (TextView)rootView.findViewById(R.id.this_month_fav).findViewById(list_txts[i]);
-            thisMonthFavViewImageList[i] = (ImageView) rootView.findViewById(R.id.this_month_fav).findViewById(list_imgs[i]);
-
-            playbackViewTextList[i] = (TextView) rootView.findViewById(R.id.playback).findViewById(list_txts[i]);
-            playbackViewImageList[i] = (ImageView) rootView.findViewById(R.id.playback).findViewById(list_imgs[i]);
-
-            myFavoriteViewTextList[i] = (TextView) rootView.findViewById(R.id.my_favorite).findViewById(list_txts[i]);
-            myFavoriteViewImageList[i] = (ImageView) rootView.findViewById(R.id.my_favorite).findViewById(list_imgs[i]);
+        for (int i = 0; i < list_name.length; i++) {
+            ArrayList<HomeListMaker> homeList = new ArrayList<>();
+            for (int j = 0; j < list_txts.length && j < list_imgs.length; j++) {
+                HomeListMaker homeListMaker = new HomeListMaker();
+                homeListMaker.setTextView((TextView) rootView.findViewById(list_name[i]).findViewById(list_txts[j]));
+                homeListMaker.setImageButton((ImageButton) rootView.findViewById(list_name[i]).findViewById(list_imgs[j]));
+                homeList.add(homeListMaker);
+            }
+            homeListMakerHashMap.put(list_name[i], homeList);
         }
+    }
+
+
+
+
+
+    public void setAllListTitle(View rootView) {
+        int[] title_list = {R.id.recent_history_title, R.id.this_month_fav_title, R.id.playback_title, R.id.my_favorite_title};
+        String[] titles = {"最近再生した曲", "最近のお気に入り", "プレイバック", "あなたのお気に入りのアルバムと曲"};
+        String[] infos = {"", "あなたが今月リピートで聴いた音楽", "あなたが過去数ヶ月間で一番聴いた音楽", "あなたのお気に入りのアルバムと曲"};
+
+        for(int i = 0; i < title_list.length; i++) {
+            TextView textView = (TextView)rootView.findViewById(title_list[i]).findViewById(R.id.list_title);
+            TextView textView_info = (TextView)rootView.findViewById(title_list[i]).findViewById(R.id.list_info);
+            textView.setText(titles[i]);
+            textView_info.setText(infos[i]);
+        }
+    }
+
+    public void playSong(String songPath){
+        try {
+            binder.playSongFromTop(songPath);
+
+        }catch(Exception e) {
+
+        }
+
+
+    }
+
+
+
+
+
+    @Override
+    public void onClick(View v) {
+
     }
 
 }
