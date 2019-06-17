@@ -11,7 +11,7 @@ import android.view.View;
 import android.widget.SeekBar;
 import android.widget.Toast;
 
-import takuma.idei.ideiapp.databinding.FragmentMusicplayerBinding;
+import takuma.idei.ideiapp.databinding.ActivityMusicplayerBinding;
 
 //プレーヤーの表示部分
 public class MusicPlayerActivity extends AppCompatActivity implements View.OnClickListener {
@@ -33,7 +33,7 @@ public class MusicPlayerActivity extends AppCompatActivity implements View.OnCli
         super.onCreate(savedInstanceState);
         //DataBinding用
         //DataBinding用
-        FragmentMusicplayerBinding binding = DataBindingUtil.setContentView(this, R.layout.fragment_musicplayer);
+        ActivityMusicplayerBinding binding = DataBindingUtil.setContentView(this, R.layout.activity_musicplayer);
         binding.setSongData(new SongData());
         //サービス開き
         //サービスへのアクセス

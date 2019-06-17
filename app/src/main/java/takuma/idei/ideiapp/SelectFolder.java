@@ -77,7 +77,7 @@ public class SelectFolder extends Fragment implements View.OnClickListener{
         //フォルダーのファイルをリスト化
         //fileListからmp3とフォルダを抽出したのがsongAndFolderList
         File[] fileList = new File(musicFolderPath).listFiles();
-        ArrayList<SampleListItem> listItems = new ArrayList<>();
+        ArrayList<MyLibraryListItem> listItems = new ArrayList<>();
 
         //ファイルが入っていれば
         if(fileList != null){
@@ -92,7 +92,7 @@ public class SelectFolder extends Fragment implements View.OnClickListener{
                         bmp = BitmapFactory.decodeFile(musicFolderPath + "/folder.jpg");
                     }
 
-                    SampleListItem item = new SampleListItem(bmp, file.getName());
+                    MyLibraryListItem item = new MyLibraryListItem(bmp, file.getName());
                     listItems.add(item);
 
 
@@ -102,7 +102,7 @@ public class SelectFolder extends Fragment implements View.OnClickListener{
 
             //ここからリストビューをRecyclerViewに変更
             RecyclerView recyclerView = rootView.findViewById(R.id.songList);
-            FolderRecycleViewAdapter adapter = new FolderRecycleViewAdapter(listItems) {
+            MyLibraryRecycleViewAdapter adapter = new MyLibraryRecycleViewAdapter(listItems) {
                 @Override
                 protected void onItemClicked(@NonNull String item) {
                     if (item.endsWith(".mp3")) {

@@ -2,21 +2,21 @@ package takuma.idei.ideiapp;
 
 import android.graphics.Bitmap;
 
-public class SampleListItem {
+public class MyLibraryListItem {
     private Bitmap mThumbnail = null;
     private String mTitle = null;
 
     /**
      * 空のコンストラクタ
      */
-    public SampleListItem() {};
+    public MyLibraryListItem() {};
 
     /**
      * コンストラクタ
      * @param thumbnail サムネイル画像
      * @param title タイトル
      */
-    public SampleListItem(Bitmap thumbnail, String title) {
+    public MyLibraryListItem(Bitmap thumbnail, String title) {
         mThumbnail = thumbnail;
         mTitle = title;
     }

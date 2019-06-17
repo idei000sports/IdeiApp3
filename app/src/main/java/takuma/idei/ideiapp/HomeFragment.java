@@ -25,12 +25,12 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Objects;
 
-public class Home extends Fragment implements View.OnClickListener{
+public class HomeFragment extends Fragment implements View.OnClickListener{
     private SQLiteDatabase sqLiteDatabase;
     private SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
     private String today = dateFormat.format(new Date());
 
-    private HashMap<Integer, ArrayList<HomeListMaker>> homeListMakerHashMap = new HashMap<Integer, ArrayList<HomeListMaker>>();
+    private HashMap<Integer, ArrayList<HomeListBean>> homeListMakerHashMap = new HashMap<Integer, ArrayList<HomeListBean>>();
 
     private MusicPlayerAIDL binder;
     private ServiceConnection connection = new ServiceConnection() {
@@ -49,8 +49,8 @@ public class Home extends Fragment implements View.OnClickListener{
     public void onCreate(Bundle bundle){
         super.onCreate(bundle);
 
-        PlayDataBase playDataBase = new PlayDataBase(getActivity());
-        sqLiteDatabase = playDataBase.getWritableDatabase();
+        SQLPlayDataBaseHelper SQLPlayDataBaseHelper = new SQLPlayDataBaseHelper(getActivity());
+        sqLiteDatabase = SQLPlayDataBaseHelper.getWritableDatabase();
 
         Intent serviceIntent = new Intent(getActivity(), MusicPlayerService.class);
         Objects.requireNonNull(getActivity()).startService(serviceIntent);
@@ -89,7 +89,7 @@ public class Home extends Fragment implements View.OnClickListener{
     }
 
 
-    public void getSQL(String sql, ArrayList<HomeListMaker> list, String wantColumnName) {
+    public void getSQL(String sql, ArrayList<HomeListBean> list, String wantColumnName) {
         //String[][] list = new String[6][3];
         try (Cursor cursor = sqLiteDatabase.rawQuery(sql, null)) {
             boolean next = cursor.moveToNext();
@@ -101,12 +101,13 @@ public class Home extends Fragment implements View.OnClickListener{
                     String songPath = cursor.getString(cursor.getColumnIndex("path"));
 
                     list.get(i).setAlbumArtAndInfo(title, albumArtPath, songPath);
+
                     int finalI = i;
                     list.get(i).getImageButton().setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
                             Toast.makeText(getContext(), list.get(finalI).getTitle(), Toast.LENGTH_SHORT).show();
-                            playSong(list.get(finalI).getSongPath());
+                            playSong(list.get(finalI).getSongPath(), list.get(finalI).getAlbumArtPath());
                         }
                     });
                 }
@@ -129,12 +130,12 @@ public class Home extends Fragment implements View.OnClickListener{
         int[] list_imgs = {R.id.list_img1, R.id.list_img2, R.id.list_img3, R.id.list_img4, R.id.list_img5, R.id.list_img6};
 
         for (int i = 0; i < list_name.length; i++) {
-            ArrayList<HomeListMaker> homeList = new ArrayList<>();
+            ArrayList<HomeListBean> homeList = new ArrayList<>();
             for (int j = 0; j < list_txts.length && j < list_imgs.length; j++) {
-                HomeListMaker homeListMaker = new HomeListMaker();
-                homeListMaker.setTextView((TextView) rootView.findViewById(list_name[i]).findViewById(list_txts[j]));
-                homeListMaker.setImageButton((ImageButton) rootView.findViewById(list_name[i]).findViewById(list_imgs[j]));
-                homeList.add(homeListMaker);
+                HomeListBean homeListBean = new HomeListBean();
+                homeListBean.setTextView((TextView) rootView.findViewById(list_name[i]).findViewById(list_txts[j]));
+                homeListBean.setImageButton((ImageButton) rootView.findViewById(list_name[i]).findViewById(list_imgs[j]));
+                homeList.add(homeListBean);
             }
             homeListMakerHashMap.put(list_name[i], homeList);
         }
@@ -157,10 +158,9 @@ public class Home extends Fragment implements View.OnClickListener{
         }
     }
 
-    public void playSong(String songPath){
+    public void playSong(String songPath, String albumArtPath){
         try {
-            binder.playSongFromTop(songPath);
-
+            binder.playSongFromTop(songPath, albumArtPath);
         }catch(Exception e) {
 
         }

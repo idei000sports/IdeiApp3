@@ -8,25 +8,25 @@ import android.view.ViewGroup;
 
 import java.util.List;
 
-public class FolderRecycleViewAdapter extends RecyclerView.Adapter<ViewHolder> {
+public class MyLibraryRecycleViewAdapter extends RecyclerView.Adapter<MyLibraryViewHolder> {
 
-    private List<SampleListItem> list;
+    private List<MyLibraryListItem> list;
 
-    public FolderRecycleViewAdapter(List<SampleListItem> list) {
+    public MyLibraryRecycleViewAdapter(List<MyLibraryListItem> list) {
         this.list = list;
     }
 
     @Override
-    public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public MyLibraryViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View inflate = LayoutInflater.from(parent.getContext()).inflate(R.layout.row, parent,false);
-        ViewHolder vh = new ViewHolder(inflate);
+        MyLibraryViewHolder vh = new MyLibraryViewHolder(inflate);
 
 
         vh.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 final int position = vh.getAdapterPosition();
-                SampleListItem sli = list.get(position);
+                MyLibraryListItem sli = list.get(position);
 
                 String item = sli.getTitle();
                 onItemClicked(item);
@@ -40,7 +40,7 @@ public class FolderRecycleViewAdapter extends RecyclerView.Adapter<ViewHolder> {
     }
 
     @Override
-    public void onBindViewHolder(ViewHolder holder, int position) {
+    public void onBindViewHolder(MyLibraryViewHolder holder, int position) {
         holder.titleView.setText(list.get(position).getTitle());
         holder.thumbnailView.setImageBitmap(list.get(position).getThumbnail());
     }

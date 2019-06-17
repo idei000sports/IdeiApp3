@@ -5,10 +5,10 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-public class ViewHolder extends RecyclerView.ViewHolder {
+public class MyLibraryViewHolder extends RecyclerView.ViewHolder {
     public TextView titleView;
     public ImageView thumbnailView;
-    public ViewHolder(View itemView) {
+    public MyLibraryViewHolder(View itemView) {
         super(itemView);
         titleView = (TextView) itemView.findViewById(R.id.title);
         thumbnailView = (ImageView) itemView.findViewById(R.id.thumbnail);

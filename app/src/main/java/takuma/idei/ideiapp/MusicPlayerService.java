@@ -117,8 +117,9 @@ public class MusicPlayerService extends Service {
 
         }
         @Override
-        public void playSongFromTop(String songPath) {
+        public void playSongFromTop(String songPath, String albumArtPath) {
             Toast.makeText(getApplicationContext(), songPath, Toast.LENGTH_SHORT).show();
+            MusicPlayerService.albumArtPath = albumArtPath;
             playSong(songPath);
         }
 

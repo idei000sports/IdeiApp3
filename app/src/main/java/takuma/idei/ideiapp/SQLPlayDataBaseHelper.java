@@ -4,7 +4,7 @@ import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
-public class PlayDataBase extends SQLiteOpenHelper {
+public class SQLPlayDataBaseHelper extends SQLiteOpenHelper {
     static final String DB_NAME = "counter.db";
 
     static final int DB_VERSION = 1;
@@ -15,7 +15,7 @@ public class PlayDataBase extends SQLiteOpenHelper {
     static final String DROP_COUNT_AND_DATE_TABLE = "DROP TABLE count_and_date_table;";
 
 
-    public PlayDataBase(Context c) {
+    public SQLPlayDataBaseHelper(Context c) {
         super(c, DB_NAME, null, DB_VERSION);
     }
 

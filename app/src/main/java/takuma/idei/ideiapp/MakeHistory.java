@@ -20,8 +20,8 @@ public class MakeHistory {
 
 
     public void makeCountDataTable(Context context, String artist_name, String album_name, String albumArtPath, String songPath) {
-        PlayDataBase playDataBase = new PlayDataBase(context);
-        SQLiteDatabase sqLiteDatabase = playDataBase.getWritableDatabase();
+        SQLPlayDataBaseHelper SQLPlayDataBaseHelper = new SQLPlayDataBaseHelper(context);
+        SQLiteDatabase sqLiteDatabase = SQLPlayDataBaseHelper.getWritableDatabase();
         ContentValues values = new ContentValues();
         try {
             values.put("artist", artist_name);
@@ -39,8 +39,8 @@ public class MakeHistory {
 
     public void makeCountTable(Context context, String title_name, String artist_name, String album_name, String albumArtPath, String songPath) {
         int count = 0;
-        PlayDataBase playDataBase = new PlayDataBase(context);
-        SQLiteDatabase sqLiteDatabase = playDataBase.getWritableDatabase();
+        SQLPlayDataBaseHelper SQLPlayDataBaseHelper = new SQLPlayDataBaseHelper(context);
+        SQLiteDatabase sqLiteDatabase = SQLPlayDataBaseHelper.getWritableDatabase();
         ContentValues values = new ContentValues();
         Cursor cursor = null;
         try {

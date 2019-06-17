@@ -10,10 +10,10 @@ import android.widget.TextView;
 
 import java.util.List;
 
-public class SampleListAdapter extends ArrayAdapter<SampleListItem> {
+public class MyLibraryAdapter extends ArrayAdapter<MyLibraryListItem> {
 
     private int mResource;
-    private List<SampleListItem> mItems;
+    private List<MyLibraryListItem> mItems;
     private LayoutInflater mInflater;
 
     /**
@@ -22,7 +22,7 @@ public class SampleListAdapter extends ArrayAdapter<SampleListItem> {
      * @param resource リソースID
      * @param items リストビューの要素
      */
-    public SampleListAdapter(Context context, int resource, List<SampleListItem> items) {
+    public MyLibraryAdapter(Context context, int resource, List<MyLibraryListItem> items) {
         super(context, resource, items);
 
         mResource = resource;
@@ -42,7 +42,7 @@ public class SampleListAdapter extends ArrayAdapter<SampleListItem> {
         }
 
         // リストビューに表示する要素を取得
-        SampleListItem item = mItems.get(position);
+        MyLibraryListItem item = mItems.get(position);
 
         // サムネイル画像を設定
         ImageView thumbnail = (ImageView)view.findViewById(R.id.thumbnail);

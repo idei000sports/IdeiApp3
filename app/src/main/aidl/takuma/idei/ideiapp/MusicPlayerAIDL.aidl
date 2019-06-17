@@ -8,7 +8,7 @@ interface MusicPlayerAIDL {
     //再生関連
     void playOrPauseSong();
     void setRepeat();
-    void playSongFromTop(String songPath);
+    void playSongFromTop(String songPath, String albumArtPath);
 
 
     //戻るor次

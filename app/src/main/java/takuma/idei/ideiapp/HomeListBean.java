@@ -5,7 +5,7 @@ import android.graphics.BitmapFactory;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
-public class HomeListMaker {
+public class HomeListBean {
     private ImageButton imageButton;
     private TextView textView;
     private String title;

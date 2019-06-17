@@ -34,13 +34,13 @@ public class MainActivity extends AppCompatActivity {
         public boolean onNavigationItemSelected(@NonNull MenuItem item) {
             switch (item.getItemId()) {
                 case R.id.navigation_home:
-                    fragment = new Home();
+                    fragment = new HomeFragment();
                     break;
                 case R.id.navigation_dashboard:
-                    fragment = new Search();
+                    fragment = new SearchFragment();
                     break;
                 case R.id.navigation_selectFolder:
-                    fragment = new SelectFolder();
+                    fragment = new MyLibraryFragment();
                     break;
             }
 
@@ -59,10 +59,13 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         requestReadStorage();
 
+        InitialCreationOfDatabase initialCreationOfDatabase = new InitialCreationOfDatabase();
+        initialCreationOfDatabase.getPath(getApplicationContext());
+
 
         fragmentManager = getSupportFragmentManager();
-        fragment = new Home();
-        bottomPlayerFragment = new BottomPlayer();
+        fragment = new HomeFragment();
+        bottomPlayerFragment = new BottomPlayerFragment();
 
         //this.bindService(serviceIntent, connection, Context.BIND_AUTO_CREATE);
 

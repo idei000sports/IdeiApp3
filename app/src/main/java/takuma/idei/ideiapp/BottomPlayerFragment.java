@@ -18,7 +18,7 @@ import java.util.Objects;
 
 import takuma.idei.ideiapp.databinding.FragmentBottomplayerBinding;
 
-public class BottomPlayer extends Fragment implements View.OnClickListener{
+public class BottomPlayerFragment extends Fragment implements View.OnClickListener{
     //ServiceへのBinder
 
     private MusicPlayerAIDL binder;
