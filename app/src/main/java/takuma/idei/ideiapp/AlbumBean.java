@@ -1,10 +1,16 @@
 package takuma.idei.ideiapp;
 
-public class AlbumBean {
+import java.io.Serializable;
+
+public class AlbumBean implements Serializable {
     private String albumTitle;
     private String albumArt;
     private String artist;
     private String path;
+
+    public AlbumBean(){
+
+    }
 
 
     public AlbumBean(String artist, String albumTitle, String albumArt, String path) {

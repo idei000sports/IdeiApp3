@@ -5,7 +5,11 @@ public class SongBean {
     private String title;
     private String album;
     private String path;
+    private int count;
 
+    public SongBean() {
+
+    }
     public SongBean(String artist, String title, String album, String path) {
         this.artist = artist;
         this.title = title;
@@ -43,5 +47,13 @@ public class SongBean {
 
     public void setPath(String path) {
         this.path = path;
+    }
+
+    public int getCount() {
+        return count;
+    }
+
+    public void setCount(int count) {
+        this.count = count;
     }
 }

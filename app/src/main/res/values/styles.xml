@@ -50,5 +50,12 @@
         <item name="android:background">@null</item>
     </style>
 
+    <style name="ArtistFragmentText">
+        <item name="android:textColor">#FFFFFF</item>
+        <item name="android:singleLine">true</item>
+        <item name="android:fontFamily">sans-serif-black</item>
+
+    </style>
+
 
 </resources>

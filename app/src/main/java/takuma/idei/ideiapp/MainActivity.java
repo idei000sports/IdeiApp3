@@ -37,7 +37,7 @@ public class MainActivity extends AppCompatActivity {
                     fragment = new HomeFragment();
                     break;
                 case R.id.navigation_dashboard:
-                    fragment = new SearchFragment();
+                    fragment = new SelectFolder();
                     break;
                 case R.id.navigation_selectFolder:
                     fragment = new MyLibraryFragment();
@@ -53,10 +53,10 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
         Intent serviceIntent = new Intent(this, MusicPlayerService.class);
         Objects.requireNonNull(this).startService(serviceIntent);
 
-        setContentView(R.layout.activity_main);
         requestReadStorage();
 
         InitialCreationOfDatabase initialCreationOfDatabase = new InitialCreationOfDatabase();

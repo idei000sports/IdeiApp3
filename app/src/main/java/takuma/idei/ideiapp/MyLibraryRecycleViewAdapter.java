@@ -26,10 +26,18 @@ public class MyLibraryRecycleViewAdapter extends RecyclerView.Adapter<MyLibraryV
             @Override
             public void onClick(View v) {
                 final int position = vh.getAdapterPosition();
-                MyLibraryListItem sli = list.get(position);
+                MyLibraryListItem myLibraryListItem = list.get(position);
 
-                String item = sli.getTitle();
-                onItemClicked(item);
+                String title = myLibraryListItem.getTitle();
+
+
+
+
+
+                AlbumBean albumBean = new AlbumBean();
+                albumBean.setArtist(title);
+
+                onItemClicked(albumBean);
             }
         });
 
@@ -51,7 +59,7 @@ public class MyLibraryRecycleViewAdapter extends RecyclerView.Adapter<MyLibraryV
         return list.size();
     }
 
-    protected void onItemClicked(@NonNull String item) {
+    protected void onItemClicked(@NonNull AlbumBean albumBean) {
     }
 
 

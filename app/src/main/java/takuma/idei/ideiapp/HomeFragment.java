@@ -13,6 +13,7 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -26,7 +27,7 @@ import java.util.Locale;
 import java.util.Objects;
 
 public class HomeFragment extends Fragment implements View.OnClickListener{
-    private SQLiteDatabase sqLiteDatabase;
+
     private SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
     private String today = dateFormat.format(new Date());
 
@@ -49,8 +50,8 @@ public class HomeFragment extends Fragment implements View.OnClickListener{
     public void onCreate(Bundle bundle){
         super.onCreate(bundle);
 
-        SQLPlayDataBaseHelper SQLPlayDataBaseHelper = new SQLPlayDataBaseHelper(getActivity());
-        sqLiteDatabase = SQLPlayDataBaseHelper.getWritableDatabase();
+
+
 
         Intent serviceIntent = new Intent(getActivity(), MusicPlayerService.class);
         Objects.requireNonNull(getActivity()).startService(serviceIntent);
@@ -61,6 +62,18 @@ public class HomeFragment extends Fragment implements View.OnClickListener{
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         final View rootView = inflater.inflate(R.layout.fragment_home, container, false);
+        Button button;
+        button = rootView.findViewById(R.id.get_all_db);
+        button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getActivity(),SQLGetAllDatabase.class);
+                startActivity(intent);
+            }
+        });
+
+
+
         setAndGetViewID(rootView);
         setAllListTitle(rootView);
         getAllList();
@@ -77,49 +90,111 @@ public class HomeFragment extends Fragment implements View.OnClickListener{
         cal2.add(Calendar.MONTH, -1);
         String oneMonthBefore = dateFormat.format(cal2.getTime());
 
-        String GET_RECENTLY_SQL = "SELECT song, album_art_path, id, path from count_table ORDER BY id DESC;";
-        String GET_THIS_MONTH_FAV_SQL = "SELECT album, album_art_path, count(*) AS COUNT, path FROM count_and_date_table  WHERE date BETWEEN '" + oneMonthBefore + "' AND '" + today + "' GROUP BY artist, album ORDER BY COUNT DESC;";
-        String GET_PLAYBACK_LIST_SQL = "SELECT album, album_art_path, count(*) AS COUNT, path FROM count_and_date_table  WHERE date BETWEEN '" + oneYearBefore + "' AND '" + today + "' GROUP BY artist, album ORDER BY COUNT DESC;";
-        String GET_MY_FAVORITE_SQL = "SELECT album, album_art_path, count(*) AS COUNT, path FROM count_and_date_table GROUP BY artist, album ORDER BY COUNT DESC;";
 
-        getSQL(GET_RECENTLY_SQL, homeListMakerHashMap.get(R.id.recent_history), "song");
-        getSQL(GET_MY_FAVORITE_SQL, homeListMakerHashMap.get(R.id.my_favorite),"album");
-        getSQL(GET_PLAYBACK_LIST_SQL, homeListMakerHashMap.get(R.id.playback),"album");
-        getSQL(GET_THIS_MONTH_FAV_SQL, homeListMakerHashMap.get(R.id.this_month_fav),"album");
+
+
+        String GET_RECENTLY_SQL = "SELECT song_title, album_art_path, id, song_path from count_table ORDER BY id DESC;";
+        getSQL(GET_RECENTLY_SQL, homeListMakerHashMap.get(R.id.recent_history), "song_title");
+        //String GET_THIS_MONTH_FAV_SQL = "SELECT album_title, album_art_path, count(*) AS COUNT, song_path FROM count_and_date_table  WHERE date BETWEEN '" + oneMonthBefore + "' AND '" + today + "' GROUP BY artist_name, album_title ORDER BY COUNT DESC;";
+        String GET_THIS_MONTH_FAV_SQL = "SELECT album_title, album_art_path, count(*) AS COUNT, song_path FROM count_and_date_table  WHERE date BETWEEN '" + oneMonthBefore + "' AND '" + today + "' GROUP BY artist_name, album_title ORDER BY COUNT DESC;";
+        getHomeListInDate(GET_THIS_MONTH_FAV_SQL, homeListMakerHashMap.get(R.id.this_month_fav));
+
+        String GET_MY_FAVORITE_SQL = "SELECT album_title, album_art_path, count(*) AS COUNT, song_path FROM count_and_date_table GROUP BY artist_name, album_title ORDER BY COUNT DESC;";
+        getHomeListInDate(GET_MY_FAVORITE_SQL, homeListMakerHashMap.get(R.id.my_favorite));
+
+        String GET_PLAYBACK_LIST_SQL = "SELECT album_title, album_art_path, count(*) AS COUNT, song_path FROM count_and_date_table  WHERE date BETWEEN '" + oneYearBefore + "' AND '" + today + "' GROUP BY artist_name, album_title ORDER BY COUNT DESC;";
+        getHomeListInDate(GET_PLAYBACK_LIST_SQL, homeListMakerHashMap.get(R.id.playback));
+    }
+
+    public void getHomeListInDate(String sql, ArrayList<HomeListBean> list) {
+        SQLAlbumAndSongTableHelper sqlAlbumAndSongTableHelper = new SQLAlbumAndSongTableHelper(getActivity());
+        SQLiteDatabase sqLiteDatabase = sqlAlbumAndSongTableHelper.getReadableDatabase();
+        try (Cursor cursor = sqLiteDatabase.rawQuery(sql, null)) {
+
+            if (cursor != null && cursor.getCount() > 0) {
+                boolean next = cursor.moveToNext();
+                int i = 0;
+                while (next) {
+                    if (i < 6) {
+                        //album_title or song_title
+                        String title = cursor.getString(cursor.getColumnIndex("album_title"));
+
+                        String albumArtPath = cursor.getString(cursor.getColumnIndex("album_art_path"));
+                        System.out.println(albumArtPath);
+
+                        String songPath = cursor.getString(cursor.getColumnIndex("song_path"));
+
+                        list.get(i).setAlbumArtAndInfo(title, albumArtPath, songPath);
+
+                        int finalI = i;
+                        list.get(i).getImageButton().setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                Toast.makeText(getContext(), list.get(finalI).getTitle(), Toast.LENGTH_SHORT).show();
+                                playSong(list.get(finalI).getSongPath(), list.get(finalI).getAlbumArtPath());
+                            }
+                        });
+
+                        i++;
+                    }
+
+                    next = cursor.moveToNext();
+                }
+
+            }
+        } catch (Exception e) {
+            System.out.println(e);
+        }
+
+        sqlAlbumAndSongTableHelper.close();
+
     }
 
 
     public void getSQL(String sql, ArrayList<HomeListBean> list, String wantColumnName) {
-        //String[][] list = new String[6][3];
-        try (Cursor cursor = sqLiteDatabase.rawQuery(sql, null)) {
-            boolean next = cursor.moveToNext();
-            int i = 0;
-            while (next || i < 6) {
-                if (i < 6) {
-                    String title = cursor.getString(cursor.getColumnIndex(wantColumnName));
-                    String albumArtPath = cursor.getString(cursor.getColumnIndex("album_art_path"));
-                    String songPath = cursor.getString(cursor.getColumnIndex("path"));
+        String GET_RECENTLY_SQL = "SELECT song_title, album_art_path, song_path FROM count_table ORDER BY id DESC;";
+        SQLAlbumAndSongTableHelper sqlAlbumAndSongTableHelper = new SQLAlbumAndSongTableHelper(getActivity());
+        SQLiteDatabase sqLiteDatabase = sqlAlbumAndSongTableHelper.getWritableDatabase();
 
-                    list.get(i).setAlbumArtAndInfo(title, albumArtPath, songPath);
+        try (Cursor cursor = sqLiteDatabase.rawQuery(GET_RECENTLY_SQL, null)) {
+            //cursor.moveToFirst();
+            if (cursor != null && cursor.getCount() > 0) {
+                boolean next = cursor.moveToNext();
+                int i = 0;
+                while (next) {
+                    if (i < 6) {
+                        //album_title or song_title
+                        String title = cursor.getString(cursor.getColumnIndex("song_title"));
+                        String albumArtPath = cursor.getString(cursor.getColumnIndex("album_art_path"));
+                        String songPath = cursor.getString(cursor.getColumnIndex("song_path"));
 
-                    int finalI = i;
-                    list.get(i).getImageButton().setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            Toast.makeText(getContext(), list.get(finalI).getTitle(), Toast.LENGTH_SHORT).show();
-                            playSong(list.get(finalI).getSongPath(), list.get(finalI).getAlbumArtPath());
-                        }
-                    });
+                        list.get(i).setAlbumArtAndInfo(title, albumArtPath, songPath);
+
+                        int finalI = i;
+                        list.get(i).getImageButton().setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                Toast.makeText(getContext(), list.get(finalI).getTitle(), Toast.LENGTH_SHORT).show();
+                                playSong(list.get(finalI).getSongPath(), list.get(finalI).getAlbumArtPath());
+                            }
+                        });
+
+                        i++;
+                    }
+
+                    next = cursor.moveToNext();
                 }
-                i++;
-                next = cursor.moveToNext();
-            }
 
+            }
         } catch (Exception e) {
-            e.printStackTrace();
+            System.out.println(e);
         }
 
+
+        sqlAlbumAndSongTableHelper.close();
     }
+
+
 
 
 

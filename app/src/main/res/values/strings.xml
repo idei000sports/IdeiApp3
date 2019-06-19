@@ -11,4 +11,5 @@
     <string name="home_list_title">プレイリストのタイトル</string>
     <string name="home_list_title_info">プレイリストの説明</string>
 
+    <string name="fragment_artist_popular_songs">人気曲</string>
 </resources>

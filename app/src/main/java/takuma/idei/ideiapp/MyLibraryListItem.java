@@ -2,7 +2,12 @@ package takuma.idei.ideiapp;
 
 import android.graphics.Bitmap;
 
-public class MyLibraryListItem {
+import java.io.Serializable;
+
+public class MyLibraryListItem implements Serializable {
+    private static final long serialVersionUID = 1L;
+
+
     private Bitmap mThumbnail = null;
     private String mTitle = null;
 
