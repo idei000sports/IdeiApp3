@@ -1,4 +1,4 @@
-package takuma.idei.ideiapp;
+package takuma.idei.ideiapp.Home;
 
 import android.content.ComponentName;
 import android.content.Context;
@@ -25,6 +25,12 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Objects;
+
+import takuma.idei.ideiapp.MusicPlayerAIDL;
+import takuma.idei.ideiapp.MusicPlayer.MusicPlayerService;
+import takuma.idei.ideiapp.R;
+import takuma.idei.ideiapp.SQL.SQLAlbumAndSongTableHelper;
+import takuma.idei.ideiapp.SQL.SQLGetAllDatabase;
 
 public class HomeFragment extends Fragment implements View.OnClickListener{
 
@@ -67,7 +73,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener{
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(getActivity(),SQLGetAllDatabase.class);
+                Intent intent = new Intent(getActivity(), SQLGetAllDatabase.class);
                 startActivity(intent);
             }
         });

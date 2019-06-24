@@ -1,4 +1,4 @@
-package takuma.idei.ideiapp;
+package takuma.idei.ideiapp.MusicPlayer;
 
 import android.app.Service;
 import android.content.Intent;
@@ -8,6 +8,9 @@ import android.os.IBinder;
 import android.widget.Toast;
 
 import java.util.List;
+
+import takuma.idei.ideiapp.MakeHistory;
+import takuma.idei.ideiapp.MusicPlayerAIDL;
 
 public class MusicPlayerService extends Service {
     //プレーヤー

@@ -1,4 +1,4 @@
-package takuma.idei.ideiapp;
+package takuma.idei.ideiapp.Bean;
 
 import java.io.Serializable;
 

@@ -2,41 +2,44 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
-
-    <ImageView
-        android:id="@+id/thumbnail"
-        android:layout_width="0dp"
-        android:layout_height="100dp"
-        android:layout_weight="1"
-        android:padding="3dp"
-        android:scaleType="fitCenter" />
+    android:layout_height="80dp">
 
     <LinearLayout
         android:layout_width="0dp"
         android:layout_height="match_parent"
-        android:layout_marginLeft="10dp"
-        android:layout_weight="4"
+        android:layout_weight="5"
         android:orientation="vertical">
 
         <TextView
-            android:id="@+id/my_library_album_title"
+            android:id="@+id/album_song_title"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_weight="1"
+            android:layout_weight="2"
             android:fontFamily="sans-serif-black"
             android:gravity="center_vertical"
-            android:text="aiaiaiaiaiaiaiaiaiai@@@sssisis"
+            android:text="popular_song_list"
             android:textColor="#FFFFFF"
             android:textSize="18sp" />
 
         <TextView
-            android:id="@+id/my_library_artist_name"
+            android:id="@+id/album_song_artist"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="1"
-            android:textColor="#FFFFFF"
-            android:text="TextView" />
+            android:fontFamily="sans-serif-light"
+            android:text="再生数"
+            android:textColor="#FFFFFF" />
     </LinearLayout>
+
+    <ImageButton
+        android:id="@+id/imageButton"
+        android:layout_width="0dp"
+        android:layout_height="30dp"
+        android:layout_gravity="center"
+        android:layout_weight="1"
+        android:background="@null"
+        android:scaleType="fitCenter"
+        android:tint="#FFFFFF"
+        app:srcCompat="@drawable/list" />
 
 </LinearLayout>

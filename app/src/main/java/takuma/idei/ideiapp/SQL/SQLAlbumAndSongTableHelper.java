@@ -1,4 +1,4 @@
-package takuma.idei.ideiapp;
+package takuma.idei.ideiapp.SQL;
 
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
@@ -35,13 +35,7 @@ public class SQLAlbumAndSongTableHelper extends SQLiteOpenHelper {
         db.execSQL(CREATE_SONG_TABLE);
         db.execSQL(CREATE_COUNT_TABLE);
         db.execSQL(CREATE_COUNT_AND_DATE_TABLE);
-        for (int i = 0; i < 10; i++) {
-            db.execSQL("INSERT INTO count_and_date_table (artist_name, album_title, album_art_path, date, song_path) VALUES ('artist', 'album', '/storage/emulated/0/Music/Bad Adults/folder.jpg', '0', 'path');");
-            db.execSQL("INSERT INTO count_table (song_title, artist_name, album_title, album_art_path, count, song_path) VALUES ('song', 'artist', 'album', '/storage/emulated/0/Music/Bad Adults/folder.jpg', '0', 'path');");
-            db.execSQL("INSERT INTO song (song_title, artist_name, album_title, song_path, track_number) VALUES ('song', 'artist', 'album', 'path', '0');");
-            db.execSQL("INSERT INTO album (artist_name, album_title, album_path, album_art_path) VALUES ('artist', 'album', 'path', 'album_art_path');");
-            System.out.println("SQLALBUMANDSONGTABLEHELPER追加");
-        }
+
 
     }
 

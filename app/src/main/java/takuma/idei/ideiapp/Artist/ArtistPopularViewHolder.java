@@ -1,8 +1,10 @@
-package takuma.idei.ideiapp;
+package takuma.idei.ideiapp.Artist;
 
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.TextView;
+
+import takuma.idei.ideiapp.R;
 
 public class ArtistPopularViewHolder extends RecyclerView.ViewHolder {
     public TextView songTitleView;

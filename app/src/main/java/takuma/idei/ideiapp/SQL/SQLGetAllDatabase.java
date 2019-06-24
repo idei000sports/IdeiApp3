@@ -1,4 +1,4 @@
-package takuma.idei.ideiapp;
+package takuma.idei.ideiapp.SQL;
 
 import android.app.Activity;
 import android.database.Cursor;
@@ -10,6 +10,8 @@ import android.widget.ListView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
+
+import takuma.idei.ideiapp.R;
 
 public class SQLGetAllDatabase extends Activity {
     ListView listView;

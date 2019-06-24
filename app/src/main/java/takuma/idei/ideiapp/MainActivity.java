@@ -18,9 +18,13 @@ import android.view.MenuItem;
 
 import java.util.Objects;
 
+import takuma.idei.ideiapp.Home.HomeFragment;
+import takuma.idei.ideiapp.MusicPlayer.MusicPlayerService;
+import takuma.idei.ideiapp.MyLibrary.MyLibraryFragment;
+
 public class MainActivity extends AppCompatActivity {
     private Fragment fragment;
-    private Fragment bottomPlayerFragment;
+    //private Fragment bottomPlayerFragment;
     private FragmentManager fragmentManager;
 
 
@@ -53,27 +57,20 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        //ストレージ利用の許諾得る
+        requestReadStorage();
+        //ストレージのファイルをSQLiteデータベースに登録
+        InitialCreationOfDatabase initialCreationOfDatabase = new InitialCreationOfDatabase(getApplicationContext());
+
         setContentView(R.layout.activity_main);
+
         Intent serviceIntent = new Intent(this, MusicPlayerService.class);
         Objects.requireNonNull(this).startService(serviceIntent);
 
-        requestReadStorage();
-
-        InitialCreationOfDatabase initialCreationOfDatabase = new InitialCreationOfDatabase();
-        initialCreationOfDatabase.getPath(getApplicationContext());
-
-
         fragmentManager = getSupportFragmentManager();
-        fragment = new HomeFragment();
-        bottomPlayerFragment = new BottomPlayerFragment();
-
-        //this.bindService(serviceIntent, connection, Context.BIND_AUTO_CREATE);
-
 
         BottomNavigationView navView = findViewById(R.id.nav_view);
         navView.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
-
-
     }
 
     @RequiresApi(api = Build.VERSION_CODES.M)
@@ -84,9 +81,7 @@ public class MainActivity extends AppCompatActivity {
             if(shouldShowRequestPermissionRationale(
                     Manifest.permission.READ_EXTERNAL_STORAGE)){
 
-            }
-
-            requestPermissions(new String[]{
+            }requestPermissions(new String[]{
                     Manifest.permission.READ_EXTERNAL_STORAGE
             }, PERMISSON_REQUEST_CODE);
         }else{

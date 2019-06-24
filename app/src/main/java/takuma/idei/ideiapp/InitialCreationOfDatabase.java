@@ -9,7 +9,8 @@ import java.io.File;
 public class InitialCreationOfDatabase {
     MediaMetadataRetriever mediaMetadataRetriever;
 
-    public void getPath(Context context) {
+
+    public InitialCreationOfDatabase(Context context) {
         String storagePath = Environment.getExternalStorageDirectory().getPath();
         String musicFolderPath = storagePath + "/Music";
         Make(context, musicFolderPath);
@@ -20,6 +21,7 @@ public class InitialCreationOfDatabase {
         if(fileList != null){
             for (File file : fileList) {
                 if (file.isFile() && file.getName().endsWith(".mp3")) {
+
                     makeSongData(context, musicFolderPath, musicFolderPath + "/" + file.getName());
                 }
 
@@ -51,6 +53,8 @@ public class InitialCreationOfDatabase {
             artist_name = mediaMetadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ARTIST);
             album_title = mediaMetadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ALBUM);
             track_number = mediaMetadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_CD_TRACK_NUMBER);
+
+
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -58,5 +62,10 @@ public class InitialCreationOfDatabase {
         asdb.putSong(context, artist_name,song_title,album_title,songPath,track_number);
         asdb.putAlbum(context,artist_name, album_title, album_path, album_art_path);
 
+    }
+
+    private static String escape(String value) {
+        value = value.replaceAll("'", "\'");
+        return value;
     }
 }

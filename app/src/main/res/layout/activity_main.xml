@@ -18,7 +18,7 @@
 
         <fragment
             android:id="@+id/fragment"
-            android:name="takuma.idei.ideiapp.HomeFragment"
+            android:name="takuma.idei.ideiapp.Home.HomeFragment"
             android:layout_width="match_parent"
             android:layout_height="match_parent" />
 
@@ -34,7 +34,7 @@
 
         <fragment
             android:id="@+id/bottom_player"
-            android:name="takuma.idei.ideiapp.BottomPlayerFragment"
+            android:name="takuma.idei.ideiapp.BottomPlayer.BottomPlayerFragment"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="0.5" />

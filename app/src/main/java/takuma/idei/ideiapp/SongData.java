@@ -11,6 +11,8 @@ import android.util.Log;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 
+import takuma.idei.ideiapp.MusicPlayer.MusicPlayerService;
+
 import static android.content.ContentValues.TAG;
 
 public class SongData extends BaseObservable {

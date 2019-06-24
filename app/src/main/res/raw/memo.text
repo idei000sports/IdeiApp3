@@ -18,7 +18,7 @@ import java.util.ArrayList;
 
 public class MusicPlayer extends Fragment implements View.OnClickListener{
     private TextView title;
-    private TextView artist;
+    private TextView artist_name;
     private TextView album;
 
     private MediaPlayer mediaPlayer;
@@ -124,12 +124,12 @@ public class MusicPlayer extends Fragment implements View.OnClickListener{
         }
 
         String title = mediaMetadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_TITLE);
-        String artist = mediaMetadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ARTIST);
+        String artist_name = mediaMetadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ARTIST);
         String album = mediaMetadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ALBUM);
 
         ArrayList<String> songData = new ArrayList<>();
         songData.add(title);
-        songData.add(artist);
+        songData.add(artist_name);
         songData.add(album);
 
         return songData;
@@ -181,10 +181,10 @@ public class MusicPlayer extends Fragment implements View.OnClickListener{
 
             ArrayList<String> songData = showMetaData(path);
             title = (TextView)rootView.findViewById(R.id.title);
-            artist = (TextView)rootView.findViewById(R.id.artist);
+            artist_name = (TextView)rootView.findViewById(R.id.artist_name);
             album = (TextView)rootView.findViewById(R.id.album);
             title.setText(songData.get(0));
-            artist.setText(songData.get(1));
+            artist_name.setText(songData.get(1));
             album.setText(songData.get(2));
 
         } catch (Exception e) {

@@ -1,4 +1,4 @@
-package takuma.idei.ideiapp;
+package takuma.idei.ideiapp.BottomPlayer;
 
 import android.content.ComponentName;
 import android.content.Context;
@@ -16,6 +16,11 @@ import android.widget.LinearLayout;
 
 import java.util.Objects;
 
+import takuma.idei.ideiapp.MusicPlayerAIDL;
+import takuma.idei.ideiapp.MusicPlayer.MusicPlayerActivity;
+import takuma.idei.ideiapp.MusicPlayer.MusicPlayerService;
+import takuma.idei.ideiapp.R;
+import takuma.idei.ideiapp.SongData;
 import takuma.idei.ideiapp.databinding.FragmentBottomplayerBinding;
 
 public class BottomPlayerFragment extends Fragment implements View.OnClickListener{
@@ -71,7 +76,7 @@ public class BottomPlayerFragment extends Fragment implements View.OnClickListen
                     case R.id.bottom_player_up:
                     case R.id.bottom_player_bg:
                         //プレーヤー（大）起動
-                        Intent intent = new Intent(getActivity(),MusicPlayerActivity.class);
+                        Intent intent = new Intent(getActivity(), MusicPlayerActivity.class);
                         startActivity(intent);
                         break;
                 }

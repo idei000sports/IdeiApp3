@@ -1,5 +1,6 @@
-package takuma.idei.ideiapp;
+package takuma.idei.ideiapp.MyLibrary;
 
+import android.graphics.Bitmap;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -7,6 +8,8 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import java.util.List;
+
+import takuma.idei.ideiapp.R;
 
 public class MyLibraryRecycleViewAdapter extends RecyclerView.Adapter<MyLibraryViewHolder> {
 
@@ -28,16 +31,11 @@ public class MyLibraryRecycleViewAdapter extends RecyclerView.Adapter<MyLibraryV
                 final int position = vh.getAdapterPosition();
                 MyLibraryListItem myLibraryListItem = list.get(position);
 
-                String title = myLibraryListItem.getTitle();
+                String albumTitle = myLibraryListItem.getAlbumTitle();
+                String artistName = myLibraryListItem.getArtistName();
+                Bitmap albumArt = myLibraryListItem.getThumbnail();
 
-
-
-
-
-                AlbumBean albumBean = new AlbumBean();
-                albumBean.setArtist(title);
-
-                onItemClicked(albumBean);
+                onItemClicked(albumTitle, artistName);
             }
         });
 
@@ -49,7 +47,8 @@ public class MyLibraryRecycleViewAdapter extends RecyclerView.Adapter<MyLibraryV
 
     @Override
     public void onBindViewHolder(MyLibraryViewHolder holder, int position) {
-        holder.titleView.setText(list.get(position).getTitle());
+        holder.albumView.setText(list.get(position).getAlbumTitle());
+        holder.artistView.setText(list.get(position).getArtistName());
         holder.thumbnailView.setImageBitmap(list.get(position).getThumbnail());
     }
 
@@ -59,7 +58,7 @@ public class MyLibraryRecycleViewAdapter extends RecyclerView.Adapter<MyLibraryV
         return list.size();
     }
 
-    protected void onItemClicked(@NonNull AlbumBean albumBean) {
+    protected void onItemClicked(@NonNull String albumTitle, String artistName) {
     }
 
 

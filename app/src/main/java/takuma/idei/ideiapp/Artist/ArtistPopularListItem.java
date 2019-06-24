@@ -1,4 +1,4 @@
-package takuma.idei.ideiapp;
+package takuma.idei.ideiapp.Artist;
 
 public class ArtistPopularListItem {
     private static final long serialVersionUID = 1L;

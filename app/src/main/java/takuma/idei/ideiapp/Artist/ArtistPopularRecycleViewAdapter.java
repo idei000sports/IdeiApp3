@@ -1,4 +1,4 @@
-package takuma.idei.ideiapp;
+package takuma.idei.ideiapp.Artist;
 
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
@@ -8,29 +8,31 @@ import android.view.ViewGroup;
 
 import java.util.List;
 
-public class ArtistPopularRecycleViewAdapter extends RecyclerView.Adapter<ArtistPopularViewHolder> {
-    private List<ArtistPopularListItem> list;
+import takuma.idei.ideiapp.R;
 
-    public ArtistPopularRecycleViewAdapter(List<ArtistPopularListItem> list) {
+public class ArtistPopularRecycleViewAdapter extends RecyclerView.Adapter<ArtistViewHolder> {
+    private List<ArtistListItem> list;
+
+    public ArtistPopularRecycleViewAdapter(List<ArtistListItem> list) {
         this.list = list;
     }
 
     @Override
-    public ArtistPopularViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public ArtistViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View inflate = LayoutInflater.from(parent.getContext()).inflate(R.layout.popular_song_row, parent,false);
-        ArtistPopularViewHolder vh = new ArtistPopularViewHolder(inflate);
+        ArtistViewHolder vh = new ArtistViewHolder(inflate);
 
 
         vh.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 final int position = vh.getAdapterPosition();
-                ArtistPopularListItem artistPopularListItem = list.get(position);
+                ArtistListItem artistListItem = list.get(position);
 
-                String title = artistPopularListItem.getSong_title();
+                String song_title = artistListItem.getSong_title();
 
 
-                onItemClicked(title);
+                onItemClicked(song_title);
             }
         });
 
@@ -41,7 +43,7 @@ public class ArtistPopularRecycleViewAdapter extends RecyclerView.Adapter<Artist
     }
 
     @Override
-    public void onBindViewHolder(ArtistPopularViewHolder holder, int position) {
+    public void onBindViewHolder(ArtistViewHolder holder, int position) {
 
         holder.songTitleView.setText(list.get(position).getSong_title());
         holder.rankingView.setText(Integer.toString(list.get(position).getRanking()));
@@ -54,6 +56,6 @@ public class ArtistPopularRecycleViewAdapter extends RecyclerView.Adapter<Artist
         return list.size();
     }
 
-    protected void onItemClicked(@NonNull String title) {
+    protected void onItemClicked(@NonNull String song_title) {
     }
 }

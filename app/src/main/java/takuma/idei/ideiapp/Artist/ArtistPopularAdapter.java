@@ -1,19 +1,19 @@
-package takuma.idei.ideiapp;
+package takuma.idei.ideiapp.Artist;
 
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import java.util.List;
 
-public class MyLibraryAdapter extends ArrayAdapter<MyLibraryListItem> {
+import takuma.idei.ideiapp.R;
 
+public class ArtistPopularAdapter extends ArrayAdapter<ArtistListItem> {
     private int mResource;
-    private List<MyLibraryListItem> mItems;
+    private List<ArtistListItem> mItems;
     private LayoutInflater mInflater;
 
     /**
@@ -22,7 +22,7 @@ public class MyLibraryAdapter extends ArrayAdapter<MyLibraryListItem> {
      * @param resource リソースID
      * @param items リストビューの要素
      */
-    public MyLibraryAdapter(Context context, int resource, List<MyLibraryListItem> items) {
+    public ArtistPopularAdapter(Context context, int resource, List<ArtistListItem> items) {
         super(context, resource, items);
 
         mResource = resource;
@@ -42,16 +42,18 @@ public class MyLibraryAdapter extends ArrayAdapter<MyLibraryListItem> {
         }
 
         // リストビューに表示する要素を取得
-        MyLibraryListItem item = mItems.get(position);
+        ArtistListItem item = mItems.get(position);
 
-        // サムネイル画像を設定
-        ImageView thumbnail = (ImageView)view.findViewById(R.id.thumbnail);
-        thumbnail.setImageBitmap(item.getThumbnail());
+        TextView songTitle = (TextView) view.findViewById(R.id.popular_song_title);
+        songTitle.setText(item.getSong_title());
 
-        // タイトルを設定
-        TextView title = (TextView)view.findViewById(R.id.title);
-        title.setText(item.getTitle());
+        TextView ranking = (TextView) view.findViewById(R.id.popular_ranking);
+        ranking.setText(item.getRanking());
+
+        TextView playCount = (TextView) view.findViewById(R.id.popular_count);
+        playCount.setText(item.getPlaycount());
 
         return view;
     }
+
 }

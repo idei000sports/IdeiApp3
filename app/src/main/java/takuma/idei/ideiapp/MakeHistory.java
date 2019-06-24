@@ -9,6 +9,8 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 
+import takuma.idei.ideiapp.SQL.SQLAlbumAndSongTableHelper;
+
 public class MakeHistory {
 
     private String getDateTime() {

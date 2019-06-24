@@ -21,6 +21,9 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
+import takuma.idei.ideiapp.MusicPlayer.MusicPlayerService;
+import takuma.idei.ideiapp.SQL.SQLAlbumAndSongTableHelper;
+
 import static android.content.Context.BIND_AUTO_CREATE;
 
 public class SelectFolder extends Fragment implements View.OnClickListener{

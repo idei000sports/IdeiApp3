@@ -1,17 +1,21 @@
-package takuma.idei.ideiapp;
+package takuma.idei.ideiapp.MyLibrary;
 
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import java.util.List;
 
-public class ArtistPopularAdapter extends ArrayAdapter<ArtistPopularListItem> {
+import takuma.idei.ideiapp.R;
+
+public class MyLibraryAdapter extends ArrayAdapter<MyLibraryListItem> {
+
     private int mResource;
-    private List<ArtistPopularListItem> mItems;
+    private List<MyLibraryListItem> mItems;
     private LayoutInflater mInflater;
 
     /**
@@ -20,7 +24,7 @@ public class ArtistPopularAdapter extends ArrayAdapter<ArtistPopularListItem> {
      * @param resource リソースID
      * @param items リストビューの要素
      */
-    public ArtistPopularAdapter(Context context, int resource, List<ArtistPopularListItem> items) {
+    public MyLibraryAdapter(Context context, int resource, List<MyLibraryListItem> items) {
         super(context, resource, items);
 
         mResource = resource;
@@ -40,18 +44,19 @@ public class ArtistPopularAdapter extends ArrayAdapter<ArtistPopularListItem> {
         }
 
         // リストビューに表示する要素を取得
-        ArtistPopularListItem item = mItems.get(position);
+        MyLibraryListItem item = mItems.get(position);
 
-        TextView songTitle = (TextView) view.findViewById(R.id.popular_song_title);
-        songTitle.setText(item.getSong_title());
+        // サムネイル画像を設定
+        ImageView thumbnail = (ImageView)view.findViewById(R.id.thumbnail);
+        thumbnail.setImageBitmap(item.getThumbnail());
 
-        TextView ranking = (TextView) view.findViewById(R.id.popular_ranking);
-        ranking.setText(item.getRanking());
+        // タイトルを設定
+        TextView album_title = (TextView)view.findViewById(R.id.my_library_album_title);
+        album_title.setText(item.getAlbumTitle());
 
-        TextView playCount = (TextView) view.findViewById(R.id.popular_count);
-        playCount.setText(item.getPlaycount());
+        TextView artist_name = (TextView)view.findViewById(R.id.my_library_artist_name);
+        artist_name.setText(item.getArtistName());
 
         return view;
     }
-
 }

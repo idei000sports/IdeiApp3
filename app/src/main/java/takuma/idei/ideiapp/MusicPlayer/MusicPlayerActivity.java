@@ -1,4 +1,4 @@
-package takuma.idei.ideiapp;
+package takuma.idei.ideiapp.MusicPlayer;
 
 import android.content.ComponentName;
 import android.content.Intent;
@@ -11,6 +11,9 @@ import android.view.View;
 import android.widget.SeekBar;
 import android.widget.Toast;
 
+import takuma.idei.ideiapp.MusicPlayerAIDL;
+import takuma.idei.ideiapp.R;
+import takuma.idei.ideiapp.SongData;
 import takuma.idei.ideiapp.databinding.ActivityMusicplayerBinding;
 
 //プレーヤーの表示部分

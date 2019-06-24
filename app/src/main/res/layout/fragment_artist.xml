@@ -63,7 +63,25 @@
             <include
                 layout="@layout/popular_songs"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
+                android:layout_height="wrap_content"
+                android:layout_weight="1" />
+
+            <TableLayout
+                android:id="@+id/fragment_artist_album_table"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1">
+
+                <TableRow
+                    android:id="@+id/fragment_artist_album_row1"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent" />
+
+                <TableRow
+                    android:id="@+id/fragment_artist_album_row2"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"/>
+            </TableLayout>
         </LinearLayout>
     </android.support.v4.widget.NestedScrollView>
 

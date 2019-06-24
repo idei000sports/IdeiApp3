@@ -1,4 +1,4 @@
-package takuma.idei.ideiapp;
+package takuma.idei.ideiapp.Home;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
