@@ -3,10 +3,10 @@ package takuma.idei.ideiapp.MusicPlayer;
 import android.content.ComponentName;
 import android.content.Intent;
 import android.content.ServiceConnection;
-import android.databinding.DataBindingUtil;
+import androidx.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.os.IBinder;
-import android.support.v7.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatActivity;
 import android.view.View;
 import android.widget.SeekBar;
 import android.widget.Toast;
@@ -49,10 +49,10 @@ public class MusicPlayerActivity extends AppCompatActivity implements View.OnCli
     public void onStart() {
         super.onStart();
         //ボタン
-        findViewById(R.id.PlayButton).setOnClickListener(this);
+        findViewById(R.id.music_player_play_button).setOnClickListener(this);
         findViewById(R.id.SkipNextButton).setOnClickListener(this);
         findViewById(R.id.SkipBackButton).setOnClickListener(this);
-        findViewById(R.id.FinishActivity).setOnClickListener(this);
+        findViewById(R.id.music_player_finish_activity).setOnClickListener(this);
         findViewById(R.id.Repeat).setOnClickListener(this);
 
         positionBar = findViewById(R.id.positionBar);
@@ -89,7 +89,7 @@ public class MusicPlayerActivity extends AppCompatActivity implements View.OnCli
         if(v != null) {
             try {
                 switch (v.getId()) {
-                    case R.id.PlayButton:
+                    case R.id.music_player_play_button:
                         binder.playOrPauseSong();
                         break;
                     case R.id.SkipNextButton:
@@ -102,7 +102,7 @@ public class MusicPlayerActivity extends AppCompatActivity implements View.OnCli
                         binder.setRepeat();
                         Toast.makeText(getApplicationContext(), "リピートをONにしました", Toast.LENGTH_SHORT).show();
                         break;
-                    case R.id.FinishActivity:
+                    case R.id.music_player_finish_activity:
                         finish();
                         break;
                 }

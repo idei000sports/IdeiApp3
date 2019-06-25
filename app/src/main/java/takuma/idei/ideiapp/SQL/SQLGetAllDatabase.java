@@ -14,14 +14,13 @@ import java.util.ArrayList;
 import takuma.idei.ideiapp.R;
 
 public class SQLGetAllDatabase extends Activity {
+    String sql;
     ListView listView;
     ArrayList<String> arr;
     ArrayAdapter<String> adapter;
 
     public void getSQLDatabase(String want) {
-        String sql;
         sql = "SELECT * FROM " + want + ";";
-
         arr = new ArrayList<>();
         String one; String two; String three; String four; String five;
 

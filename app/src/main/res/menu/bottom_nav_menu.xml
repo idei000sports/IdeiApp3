@@ -6,13 +6,13 @@
         android:icon="@drawable/ic_home_black_24dp"
         android:title="@string/title_home" />
     <item
-        android:id="@+id/navigation_dashboard"
+        android:id="@+id/navigation_search"
         android:icon="@drawable/search"
         android:title="@string/title_search" />
     <item
         android:id="@+id/navigation_selectFolder"
         android:icon="@drawable/list"
-        android:title="@string/title_selectfolder" />
+        android:title="@string/title_my_music" />
 
 
 </menu>

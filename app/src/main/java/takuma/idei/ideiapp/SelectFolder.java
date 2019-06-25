@@ -7,7 +7,6 @@ import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.IBinder;
-import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,6 +15,8 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
+
+import androidx.fragment.app.Fragment;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -91,7 +92,7 @@ public class SelectFolder extends Fragment implements View.OnClickListener{
 
                         try {
                             String albumArtPath = folderPath + "/" + "folder.jpg";
-                            binder.setPlayList(playList, albumArtPath);
+                            //binder.setPlayList(playList, albumArtPath);
                         }catch (Exception e) {
 
                         }

@@ -1,117 +1,112 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 
-<LinearLayout
+
+
+<HorizontalScrollView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical">
+    android:layout_weight="2"
+    android:scrollbars="none">
 
-
-    <HorizontalScrollView
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="2"
-        android:scrollbars="none">
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:orientation="horizontal">
 
         <LinearLayout
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:orientation="horizontal">
+            android:orientation="vertical">
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:orientation="vertical">
+            <ImageButton
+                android:id="@+id/list_img1"
+                style="@style/HomeListImgBtn"
+                app:srcCompat="@drawable/loveapple" />
 
-                <ImageButton
-                    android:id="@+id/list_img1"
-                    style="@style/HomeListImgBtn"
-                    app:srcCompat="@drawable/loveapple" />
-
-                <TextView
-                    android:id="@+id/list_txt1"
-                    style="@style/HomeListText" />
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:orientation="vertical">
-
-                <ImageButton
-                    android:id="@+id/list_img2"
-                    style="@style/HomeListImgBtn"
-                    app:srcCompat="@drawable/loveapple" />
-
-                <TextView
-                    android:id="@+id/list_txt2"
-                    style="@style/HomeListText" />
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:orientation="vertical">
-
-                <ImageButton
-                    android:id="@+id/list_img3"
-                    style="@style/HomeListImgBtn"
-                    app:srcCompat="@drawable/loveapple" />
-
-                <TextView
-                    android:id="@+id/list_txt3"
-                    style="@style/HomeListText" />
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:orientation="vertical">
-
-                <ImageButton
-                    android:id="@+id/list_img4"
-                    style="@style/HomeListImgBtn"
-                    app:srcCompat="@drawable/loveapple" />
-
-                <TextView
-                    android:id="@+id/list_txt4"
-                    style="@style/HomeListText" />
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:orientation="vertical">
-
-                <ImageButton
-                    android:id="@+id/list_img5"
-                    style="@style/HomeListImgBtn"
-                    app:srcCompat="@drawable/loveapple" />
-
-                <TextView
-                    android:id="@+id/list_txt5"
-                    style="@style/HomeListText" />
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:orientation="vertical">
-
-                <ImageButton
-                    android:id="@+id/list_img6"
-                    style="@style/HomeListImgBtn"
-                    app:srcCompat="@drawable/loveapple" />
-
-                <TextView
-                    android:id="@+id/list_txt6"
-                    style="@style/HomeListText" />
-            </LinearLayout>
-
-
+            <TextView
+                android:id="@+id/list_txt1"
+                style="@style/HomeListText" />
         </LinearLayout>
-    </HorizontalScrollView>
 
-</LinearLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <ImageButton
+                android:id="@+id/list_img2"
+                style="@style/HomeListImgBtn"
+                app:srcCompat="@drawable/loveapple" />
+
+            <TextView
+                android:id="@+id/list_txt2"
+                style="@style/HomeListText" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <ImageButton
+                android:id="@+id/list_img3"
+                style="@style/HomeListImgBtn"
+                app:srcCompat="@drawable/loveapple" />
+
+            <TextView
+                android:id="@+id/list_txt3"
+                style="@style/HomeListText" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <ImageButton
+                android:id="@+id/list_img4"
+                style="@style/HomeListImgBtn"
+                app:srcCompat="@drawable/loveapple" />
+
+            <TextView
+                android:id="@+id/list_txt4"
+                style="@style/HomeListText" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <ImageButton
+                android:id="@+id/list_img5"
+                style="@style/HomeListImgBtn"
+                app:srcCompat="@drawable/loveapple" />
+
+            <TextView
+                android:id="@+id/list_txt5"
+                style="@style/HomeListText" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <ImageButton
+                android:id="@+id/list_img6"
+                style="@style/HomeListImgBtn"
+                app:srcCompat="@drawable/loveapple" />
+
+            <TextView
+                android:id="@+id/list_txt6"
+                style="@style/HomeListText" />
+        </LinearLayout>
+
+
+    </LinearLayout>
+</HorizontalScrollView>
+

@@ -143,10 +143,10 @@ public class MusicPlayerService extends Service {
 
 
         @Override
-        public void setPlayList(List<String> playList, String albumArtPath){
+        public void setPlayList(List<String> playList, String albumArtPath, int position){
             MusicPlayerService.albumArtPath = albumArtPath;
             MusicPlayerService.this.playList = playList;
-            next_track_number = 0;
+            next_track_number = position;
 
             stopSong();
             playPlayList();

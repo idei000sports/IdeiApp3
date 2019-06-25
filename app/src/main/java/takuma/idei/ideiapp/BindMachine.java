@@ -1,12 +1,23 @@
 package takuma.idei.ideiapp;
 
-public class BindMachine {
-    /*
-    private MusicPlayerAIDL binder;
-    private ServiceConnection connection = new ServiceConnection() {
+import android.app.Application;
+import android.content.ComponentName;
+import android.content.Context;
+import android.content.Intent;
+import android.content.ServiceConnection;
+import android.os.IBinder;
+
+import java.util.Objects;
+
+import takuma.idei.ideiapp.MusicPlayer.MusicPlayerService;
+
+public class BindMachine extends Application {
+
+    public static MusicPlayerAIDL binder;
+    public static ServiceConnection connection = new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName name, IBinder service) {
-            binder = MusicPlayerAIDL.Stub.asInterface(service);
+                binder = MusicPlayerAIDL.Stub.asInterface(service);
         }
         @Override
         public void onServiceDisconnected(ComponentName name) {
@@ -14,17 +25,17 @@ public class BindMachine {
         }
     };
 
-    public void BindMachine(Activity activity) {
-        Intent serviceIntent = new Intent(context, MusicPlayerService.class);
-        Objects.requireNonNull(context).startService(serviceIntent);
-        context.bindService(serviceIntent, connection, Context.BIND_AUTO_CREATE);
+    public BindMachine() {
+        Intent serviceIntent = new Intent(getApplicationContext(), MusicPlayerService.class);
+        Objects.requireNonNull(getApplicationContext()).startService(serviceIntent);
+        getApplicationContext().bindService(serviceIntent, connection, Context.BIND_AUTO_CREATE);
     }
 
-    public MusicPlayerAIDL getBinder() {
+    public static MusicPlayerAIDL getBinder() {
         return binder;
     }
-    */
 
-
-
+    public static ServiceConnection getConnection() {
+        return connection;
+    }
 }

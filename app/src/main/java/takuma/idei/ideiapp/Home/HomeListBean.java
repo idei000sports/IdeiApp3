@@ -11,14 +11,16 @@ public class HomeListBean {
     private String title;
     private String albumArtPath;
     private String songPath;
+    private String artistName;
 
 
 
 
-    public void setAlbumArtAndInfo(String title, String albumArtPath, String songPath) {
+    public void setAlbumArtAndInfo(String title, String artistName, String albumArtPath, String songPath) {
         this.title = title;
         this.albumArtPath = albumArtPath;
         this.songPath = songPath;
+        this.artistName = artistName;
 
         this.textView.setText(this.title);
 
@@ -26,6 +28,13 @@ public class HomeListBean {
         this.imageButton.setImageBitmap(bmp);
     }
 
+    public String getArtistName() {
+        return artistName;
+    }
+
+    public void setArtistName(String artistName) {
+        this.artistName = artistName;
+    }
 
     public ImageButton getImageButton() {
         return imageButton;

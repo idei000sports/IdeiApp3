@@ -8,17 +8,18 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.os.IBinder;
-import android.support.annotation.NonNull;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TableRow;
 import android.widget.TextView;
+
+import androidx.annotation.NonNull;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
 import java.util.Objects;
@@ -39,6 +40,9 @@ public class ArtistFragment extends Fragment {
     private String albumTitle;
     private View rootView;
     private RecyclerView recyclerView;
+
+    AllSongsDataBase asdb;
+
     private MusicPlayerAIDL binder;
     private ServiceConnection connection = new ServiceConnection() {
         @Override
@@ -51,15 +55,16 @@ public class ArtistFragment extends Fragment {
         }
     };
 
+
     @Override
     public void onCreate(Bundle bundle) {
         super.onCreate(bundle);
 
-        artistName = (String)getArguments().getString("ARTIST_NAME");
-
         Intent serviceIntent = new Intent(getActivity(), MusicPlayerService.class);
         Objects.requireNonNull(getActivity()).startService(serviceIntent);
         getActivity().bindService(serviceIntent, connection, Context.BIND_AUTO_CREATE);
+
+        artistName = (String)getArguments().getString("ARTIST_NAME");
 
     }
 
@@ -82,11 +87,8 @@ public class ArtistFragment extends Fragment {
     }
 
     public void makeAlbumListTableRow() {
-        AllSongsDataBase asdb = new AllSongsDataBase();
-
-
+        asdb = new AllSongsDataBase();
         TableRow tableRow1= rootView.findViewById(R.id.fragment_artist_album_row1);
-
 
         AlbumTableAdapter adapter = new AlbumTableAdapter(getContext()) {
             @Override
@@ -111,9 +113,6 @@ public class ArtistFragment extends Fragment {
         for (int i = 0; i < count; i++) {
             tableRow1.addView(adapter.getView(i, null, tableRow1));
         }
-
-
-
     }
 
 
@@ -140,15 +139,18 @@ public class ArtistFragment extends Fragment {
     public void makePopularSong() {
         ArrayList<ArtistListItem> listItems = new ArrayList<>();
 
-
-        AllSongsDataBase asdb = new AllSongsDataBase();
+        asdb = new AllSongsDataBase();
         ArrayList<SongBean> songBean = asdb.getPopularSong(getContext(),artistName);
         if (songBean.size() != 0) {
-            for (int i = 0; i < 5; i++) {
+            for (int i = 0; i < songBean.size(); i++) {
                 String song_title = songBean.get(i).getSong_title();
                 int playcount = songBean.get(i).getPlaycount();
                 ArtistListItem item = new ArtistListItem(song_title, i + 1, playcount);
                 listItems.add(item);
+
+                if(i > 4) {
+                    break;
+                }
             }
         }
 
@@ -160,9 +162,7 @@ public class ArtistFragment extends Fragment {
                 try {
                     binder.playSongFromTop(songBean.getSong_path(), songBean.getAlbum_art_path());
                 }catch (Exception e) {
-
                 }
-
             }
         };
 

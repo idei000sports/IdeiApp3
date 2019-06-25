@@ -1,8 +1,5 @@
 package takuma.idei.ideiapp;
 
-import android.databinding.BaseObservable;
-import android.databinding.Bindable;
-import android.databinding.BindingAdapter;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Handler;
@@ -10,6 +7,10 @@ import android.os.Message;
 import android.util.Log;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+
+import androidx.databinding.BaseObservable;
+import androidx.databinding.Bindable;
+import androidx.databinding.BindingAdapter;
 
 import takuma.idei.ideiapp.MusicPlayer.MusicPlayerService;
 

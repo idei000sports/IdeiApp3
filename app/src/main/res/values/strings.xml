@@ -1,15 +1,25 @@
 <resources>
     <string name="app_name">IdeiApp</string>
     <string name="title_home">Home</string>
-    <string name="title_dashboard">Dashboard</string>
-    <string name="title_notifications">Notifications</string>
-    <string name="title_selectfolder">SelectFolder</string>
+    <string name="title_my_music">My Music</string>
     <string name="title_search">Search</string>
     <string name="todo">TODO</string>
 
     <string name="home_list_artist">アーティスト名がここに挿入されます。</string>
     <string name="home_list_title">プレイリストのタイトル</string>
     <string name="home_list_title_info">プレイリストの説明</string>
+
+    <string name="music_player_top">アーティストページから再生中</string>
+
+    <string name="row_artist_name">アーティスト名</string>
+    <string name="row_album_title">アルバム名</string>
+    <string name="row_song_title">曲名</string>
+    <string name="row_playcount">再生数</string>
+    <string name="row_rank">順位</string>
+
+
+    <string name="fragment_album_artists_album">○○のアルバム</string>
+
 
     <string name="fragment_artist_popular_songs">人気曲</string>
 </resources>

@@ -6,15 +6,17 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.annotation.RequiresApi;
-import android.support.design.widget.BottomNavigationView;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
-import android.support.v4.content.ContextCompat;
-import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
+
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import java.util.Objects;
 
@@ -24,10 +26,7 @@ import takuma.idei.ideiapp.MyLibrary.MyLibraryFragment;
 
 public class MainActivity extends AppCompatActivity {
     private Fragment fragment;
-    //private Fragment bottomPlayerFragment;
     private FragmentManager fragmentManager;
-
-
 
     private final static int PERMISSON_REQUEST_CODE = 2;
 
@@ -40,8 +39,8 @@ public class MainActivity extends AppCompatActivity {
                 case R.id.navigation_home:
                     fragment = new HomeFragment();
                     break;
-                case R.id.navigation_dashboard:
-                    fragment = new SelectFolder();
+                case R.id.navigation_search:
+                    fragment = new SearchFragment();
                     break;
                 case R.id.navigation_selectFolder:
                     fragment = new MyLibraryFragment();
@@ -78,11 +77,9 @@ public class MainActivity extends AppCompatActivity {
         if(ContextCompat.checkSelfPermission(this,
                 Manifest.permission.READ_EXTERNAL_STORAGE)
                 != PackageManager.PERMISSION_GRANTED){
-            if(shouldShowRequestPermissionRationale(
-                    Manifest.permission.READ_EXTERNAL_STORAGE)){
+            if(shouldShowRequestPermissionRationale(Manifest.permission.READ_EXTERNAL_STORAGE)){
 
-            }requestPermissions(new String[]{
-                    Manifest.permission.READ_EXTERNAL_STORAGE
+            }requestPermissions(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE
             }, PERMISSON_REQUEST_CODE);
         }else{
             // ここに許可済みの時の動作を書く

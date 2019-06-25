@@ -21,7 +21,6 @@ public class InitialCreationOfDatabase {
         if(fileList != null){
             for (File file : fileList) {
                 if (file.isFile() && file.getName().endsWith(".mp3")) {
-
                     makeSongData(context, musicFolderPath, musicFolderPath + "/" + file.getName());
                 }
 

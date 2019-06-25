@@ -37,20 +37,19 @@
             android:name="takuma.idei.ideiapp.BottomPlayer.BottomPlayerFragment"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_weight="0.5" />
+            android:layout_weight="1"
+            tools:ignore="NestedWeights" />
 
-        <android.support.design.widget.BottomNavigationView
+        <com.google.android.material.bottomnavigation.BottomNavigationView
             android:id="@+id/nav_view"
             android:layout_width="match_parent"
             android:layout_height="0dp"
+            android:layout_weight="1"
             android:layout_marginStart="0dp"
             android:layout_marginEnd="0dp"
-            android:layout_weight="0.5"
             android:background="#191414"
-
-            app:itemIconTint="@color/buttom_navigation"
-            app:itemTextColor="@color/buttom_navigation"
-
+            app:itemIconTint="@color/bottom_navigation"
+            app:itemTextColor="@color/bottom_navigation"
             app:menu="@menu/bottom_nav_menu" />
     </LinearLayout>
 </LinearLayout>
